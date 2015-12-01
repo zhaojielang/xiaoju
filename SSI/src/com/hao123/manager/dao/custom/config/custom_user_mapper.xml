@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="custom_user_mapper">
+	<select id="queryUserList" parameterType="com.hao123.manager.controller.user.form.UserForm" resultType="com.hao123.manager.entity.custom.User">
+		SELECT 
+			su.id AS id, 
+			su.username AS username, 
+			su.password AS password 
+		FROM ssi_user su
+	</select>
+	
+	<insert id="insertUser" parameterType="com.hao123.manager.controller.user.form.UserForm" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO ssi_user 
+		(
+			<trim suffix="" suffixOverrides=",">
+				<if test="id != null">
+					id,
+				</if>
+				<if test="username != null">
+					username,
+				</if>
+				<if test="password != null">
+					password,
+				</if>
+			</trim>
+		) 
+		VALUE 
+		(
+			<trim suffix="" suffixOverrides=",">
+				<if test="id != null">
+					#{id},
+				</if>
+				<if test="username != null">
+					#{username},
+				</if>
+				<if test="password != null">
+					#{password},
+				</if>
+			</trim>
+		)
+	</insert>
+</mapper>

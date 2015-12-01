@@ -8,4 +8,6 @@
 	   					   http://www.springframework.org/schema/context/spring-context-3.1.xsd">
 	   
 	   <import resource="classpath:/access/applicationContext-datasource.xml"/>
+	   <import resource="classpath:/app/applicationContext-*-*.xml"/>
+	   <import resource="classpath:/ehcache/applicationContext-ehcache.xml"/>
 </beans>

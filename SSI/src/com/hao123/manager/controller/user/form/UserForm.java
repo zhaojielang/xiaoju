@@ -1,14 +1,14 @@
-package com.hao123.manager.entity;
+package com.hao123.manager.controller.user.form;
 
-public class User {
+public class UserForm {
 	private Long id;
 	private String username;
 	private String password;
 	
-	public User(){
+	public UserForm(){
 		
 	}
-	public User(Long id,String username,String password){
+	public UserForm(Long id,String username,String password){
 		this.id = id;
 		this.username=username;
 		this.password=password;
