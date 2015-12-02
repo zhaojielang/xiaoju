@@ -1,0 +1,134 @@
+@charset "utf-8";
+
+/* CSS Document */
+* {
+	margin: 0px;
+	PADDING-RIGHT: 0px;
+	PADDING-LEFT: 0px;
+	PADDING-BOTTOM: 0px;
+	PADDING-TOP: 0px;
+	border-top-width: 0px;
+	border-right-width: 0px;
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+}
+
+body {
+	FONT-SIZE: 12px;
+	MARGIN: 0px;
+	TEXT-ALIGN: center;
+	font-family: "";
+	background-color: #FFFFFF;
+}
+
+.kuang {
+	FONT-SIZE: 12px;
+	COLOR: #636a72;
+	text-decoration: none;
+	width: 705px;
+	padding-top: 17px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-right-color: #7fb6fa;
+	border-bottom-color: #7fb6fa;
+	border-left-color: #7fb6fa;
+	height:449px;
+}
+
+UL.shop_yh {
+	width: 600px;
+	margin-right: 25px;
+	margin-left: 0px;
+	padding-top: 1px;
+	list-style-type: none;
+}
+
+UL.shop_yh LI {
+	PADDING-LEFT: 25px;
+	BACKGROUND: url(../../images/index/shop_youhui_single_li.gif) no-repeat;
+	MARGIN-BOTTOM: 8px;
+	WIDTH: 600px;
+	BORDER-BOTTOM: #aacad9 1px dotted;
+	HEIGHT: 20px
+}
+
+UL.shop_yh LI A {
+	DISPLAY: block;
+	FONT-SIZE: 12px;
+	FLOAT: left;
+	COLOR: #636a72;
+	text-decoration: none;
+}
+
+UL.shop_yh LI A:hover {
+	DISPLAY: block;
+	FONT-SIZE: 12px;
+	FLOAT: left;
+	COLOR: #ff6c00;
+	text-decoration: underline;
+}
+
+UL.shop_yh LI SPAN {
+	DISPLAY: block;
+	FONT-SIZE: 12px;
+	FLOAT: right;
+	COLOR: #636a72
+}
+
+.tlele01 {
+	font-family: "";
+	font-weight: bold;
+	font-size: 14px;
+	color: #026eb9;
+	text-indent: 35px;
+}
+
+.dis_zx {
+	WIDTH: 258px;
+	LINE-HEIGHT: 19px;
+	PADDING-TOP: 12px;
+	PADDING-TOP: 12px;
+	HEIGHT: 90px;
+	color: #000;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: auto;
+	margin-left: auto;
+	font-size: 12px;
+	font-family: "宋体";
+}
+
+.dis_zx a {
+	font-size: 12px;
+	MARGIN: 0px 0px auto auto;
+	WIDTH: 258px;
+	LINE-HEIGHT: 19px;
+	PADDING-TOP: 12px;
+	HEIGHT: 90px;
+	color: #000;
+	text-decoration: none;
+	text-indent: 10px;
+	font-family: "宋体";
+}
+
+.dis_zx a:hover {
+	MARGIN: 0px 0px auto auto;
+	WIDTH: 258px;
+	LINE-HEIGHT: 19px;
+	PADDING-TOP: 12px;
+	HEIGHT: 90px;
+	color: #FF6600;
+}
+
+.tlele02 {
+	font-family: "宋体";
+	font-size: 13px;
+	color: #3a3b3a;
+	line-height: 28px;
+	text-align: justify;
+	text-indent: 30px;
+}

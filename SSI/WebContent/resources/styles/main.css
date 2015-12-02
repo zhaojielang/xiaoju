@@ -1,0 +1,111 @@
+@charset "utf-8";
+
+.logo {
+	background-image: url(../images/logo.jpg);
+	background-repeat: no-repeat;
+	background-position: left;
+	height: 74px;
+	width: 496px;
+	/*width: 378px;*/
+	float: left;
+}
+
+#body_header {
+	height: 76px;
+	width: 100%;
+	background-color: #FFFFFF;
+	border: 1px solid #FFFFFF;
+}
+
+#header_t {
+	height: 76px;
+	width: 100%;
+	border: 1px solid #afc8dc;
+	background: #5395c5;
+}
+
+#body_footer {
+	background-color: #FFFFFF;
+	height: 21px;
+	width: 100%;
+	border: 1px solid #FFFFFF;
+}
+
+#footer_t {
+	height: 21px;
+	width: 100%;
+	border: 1px solid #495d80;
+	background-image: url(../images/main/footer_bg.gif);
+	background-repeat: repeat-x;
+}
+
+#info_Users {
+	color: #1961AE;
+	text-indent: 20px;
+	float: left;
+	height: 38px;
+}
+
+#body_info {
+	height: 38px;
+	width: 100%;
+}
+
+#info_t {
+	background-image: url(../images/main/info_bg.gif);
+	background-repeat: repeat-x;
+	height: 38px;
+	width: 100%;
+	line-height: 38px;
+	color: #eaf1f7;
+	font-weight: bold;
+	background-position: left top;
+}
+
+#Exitt {
+	text-indent: 20px;
+	float: right;
+	height: 38px;
+}
+
+#Exitt a {
+	text-decoration: none;
+}
+
+#Exitt a:hover {
+	color: #FF0000;
+	text-decoration: none;
+}
+
+/*
+MSN Messenger
+*/
+div#popMsg {
+  z-index:99999;
+  right: 0px;
+  bottom: 0px;
+  width: 180px;
+  border-right: #455690 1px solid;
+  border-top: #a6b4cf 1px solid;
+  border-left: #a6b4cf 1px solid;
+  border-bottom: #455690 1px solid;
+  visibility: hidden;
+  display: none;
+  position: fixed;
+  background-color: #c9d3f3;
+  filter: progid:DXImageTransform.Microsoft.BasicImage(opacity=.65);
+  opacity: 0.65;
+}
+
+* html div#popMsg {
+  position:absolute;
+}
+
+#popMsgContent {
+  border-top: #728eb8 1px solid;
+  border-right: #b9c9ef 1px solid;
+  border-bottom: #b9c9ef 1px solid;
+  border-left: #728eb8 1px solid;
+  padding: 5px 10px;
+  color: #1f336b;
+}

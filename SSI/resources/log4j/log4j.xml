@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd" >
-<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	threshold="debug">
 	<appender name="SSI.AppLog.DailyRollingFile" class="org.apache.log4j.DailyRollingFileAppender">
 		<param name="File" value="E:/applog/clz/mobiads/SSI.log" />
 		<param name="DatePattern" value="'.'yyyy-MM-dd" />
@@ -18,38 +19,21 @@
 		</layout>
 	</appender>
 
-<!-- 	<logger name="org.springframework" additivity="true"> -->
-<!-- 		<level value="INFO" /> -->
-<!-- 	</logger> -->
-	
-<!-- 	<logger name="org.apache" additivity="true"> -->
-<!-- 		<level value="INFo" /> -->
-<!-- 	</logger> -->
-	
-<!-- 	<logger name="org.hibernate" additivity="true"> -->
-<!-- 		<level value="INFO" /> -->
-<!-- 	</logger> -->
-	<logger name="org.mybatis" additivity="true">
-		<level value="debug" />
+	<logger name="org.springframework" additivity="true">
+		<level value="INFO" />
 	</logger>
 	
-<!-- 	<logger name="net.sf.ehcache" additivity="true"> -->
-<!-- 		<level value="debug" /> -->
-<!-- 	</logger> -->
+	<logger name="org.apache" additivity="true">
+		<level value="INFO" />
+	</logger>
 	
-<!-- 	<logger name="com.goldenvista" additivity="true"> -->
-<!-- 		<level value="debug" /> -->
-<!-- 	</logger> -->
-	  
-      
-<!--     <logger name="java.sql">   -->
-<!--         <level value="debug" />   -->
-<!-- 		<appender-ref ref="SSI.ConsoleAppender" /> -->
-<!--     </logger>   -->
-    
+	<logger name="net.sf.ehcache" additivity="true">
+		<level value="INFO" />
+	</logger>
 	
 	<root>
 		<level value="debug" />
+		<appender-ref ref="SSI.AppLog.DailyRollingFile" />
 		<appender-ref ref="SSI.ConsoleAppender" />
 	</root>
 </log4j:configuration>
