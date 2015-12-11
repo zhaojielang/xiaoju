@@ -4,20 +4,21 @@
 
 <%@ page
 	import="java.util.Enumeration,java.util.Map,java.util.Set,java.util.Iterator"%>
-	
-<link href="<c:url value='/resources/styles/main.css'/>" rel="stylesheet" type="text/css" />
+
+<link href="<c:url value='/resources/styles/main.css'/>"
+	rel="stylesheet" type="text/css" />
 <script type="text/javascript"
-			src="<c:url value='/resources/scripts/jquery/jquery-1.3.2.min.js'/>"></script>
+	src="<c:url value='/resources/scripts/jquery/jquery-1.3.2.min.js'/>"></script>
 
 <table id="body_info" border="0" cellspacing="0" cellpadding="0">
 	<tr>
 		<td width="100%">
-		<table id="info_t" border="0" cellpadding="0" cellspacing="0">
-			<tr>
-				<td valign="top" width="100%">
-				<table width="100%" border="0" cellpadding="0" cellspacing="0">
-					<tr>
-					<%
+			<table id="info_t" border="0" cellpadding="0" cellspacing="0">
+				<tr>
+					<td valign="top" width="100%">
+						<table width="100%" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<%
 						String un=(String)session.getAttribute("operName");
 						String username = "未正常登录用户";
 						if (null != un) {
@@ -26,24 +27,30 @@
 						String userRole  =(String)session.getAttribute("userRole");
 						String userRoleDesc  =(String)session.getAttribute("userRoleDesc");
 						String paltEntName=(String)session.getAttribute("paltEntName");
-					%>	
-						<input type="hidden" id="getUserName" name="getUserName" value="<%=username%>" />
-						<input type="hidden" id="getUserRoleDesc" name="getUserRoleDesc" value="<%=userRoleDesc%>" />
-						<input type="hidden" id="userRole" name="userRole" value="<%=userRole%>" />	
-						<input type="hidden" id="paltEntName" name="paltEntName" value="<%=paltEntName%>" />	
-						<td height="24"><label id="info_Users" style="width: 100%"></label></td>
-						<td align="right" id="Exitt" style="font-size:1.2em;padding: 1px 0px 0px 0px"><a
-							href="#"
-							onclick="window.parent.document.location.replace('<c:url value='/'/>')">首页</a>&nbsp;&nbsp;&nbsp;
-						</td>
-						<td width="80" align="left"><img src="<c:url value='/resources/images/main/exit.gif'/>" style="border: none; cursor: pointer" onclick="closeWindow()" /></td>
-					</tr>
-				</table>
-
-				</td>
-			</tr>
-		</table>
-		</td>
+					%>
+								<input type="hidden" id="getUserName" name="getUserName"
+									value="<%=username%>" />
+								<input type="hidden" id="getUserRoleDesc" name="getUserRoleDesc"
+									value="<%=userRoleDesc%>" />
+								<input type="hidden" id="userRole" name="userRole"
+									value="<%=userRole%>" />
+								<input type="hidden" id="paltEntName" name="paltEntName"
+									value="<%=paltEntName%>" />
+								<td height="24"><label id="info_Users" style="width: 100%"></label>
+								</td>
+								<td align="right" id="Exitt"
+									style="font-size: 1.2em; padding: 1px 0px 0px 0px"><a
+									href="#"
+									onclick="window.parent.document.location.replace('<c:url value='/'/>')">首页</a>&nbsp;&nbsp;&nbsp;
+								</td>
+								<td width="80" align="left"><img
+									src="<c:url value='/resources/images/main/exit.gif'/>"
+									style="border: none; cursor: pointer" onclick="closeWindow()" />
+								</td>
+							</tr>
+						</table></td>
+				</tr>
+			</table></td>
 	</tr>
 </table>
 <script type="text/javascript">
