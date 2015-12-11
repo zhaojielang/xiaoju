@@ -10,8 +10,8 @@
 			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %p %c.%M(%L) | %m%n" />
 		</layout>
 	</appender>
-	
-	
+
+
 	<appender name="SSI.ConsoleAppender" class="org.apache.log4j.ConsoleAppender">
 		<param name="Encoding" value="UTF-8" />
 		<layout class="org.apache.log4j.PatternLayout">
@@ -22,15 +22,15 @@
 	<logger name="org.springframework" additivity="true">
 		<level value="INFO" />
 	</logger>
-	
+
 	<logger name="org.apache" additivity="true">
 		<level value="INFO" />
 	</logger>
-	
+
 	<logger name="net.sf.ehcache" additivity="true">
 		<level value="INFO" />
 	</logger>
-	
+
 	<root>
 		<level value="debug" />
 		<appender-ref ref="SSI.AppLog.DailyRollingFile" />
