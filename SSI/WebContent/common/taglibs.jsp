@@ -9,6 +9,7 @@
 <link href="<c:url value='/resources/styles/style.css'/>" rel="stylesheet" type="text/css" />
 
 
+
 <SCRIPT type="text/javascript">
 // $.ajaxSetup({cache : false});
 var contextPath = "<c:out value='${pageContext.request.contextPath}' />";
