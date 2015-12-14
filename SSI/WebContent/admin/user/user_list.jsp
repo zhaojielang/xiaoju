@@ -8,6 +8,7 @@
 <title>用户管理</title>
 	<script type="text/javascript">
 		$(document).ready(function(){
+			
 			queryList();
 		});
 		
