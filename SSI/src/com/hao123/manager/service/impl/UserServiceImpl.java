@@ -9,6 +9,7 @@ import org.springframework.cache.annotation.Cacheable;
 import com.hao123.manager.biz.UserBiz;
 import com.hao123.manager.controller.user.form.UserForm;
 import com.hao123.manager.entity.custom.User;
+import com.hao123.manager.entity.help.ResponseDatagridMode;
 import com.hao123.manager.entity.help.ResponseModel;
 import com.hao123.manager.service.UserService;
 
@@ -27,6 +28,10 @@ public class UserServiceImpl implements UserService{
 	}
 	public ResponseModel insertUser(UserForm form) {
 		return this.userBiz.insertUser(form);
+	}
+
+	public ResponseDatagridMode queryUserPaging(UserForm form) {
+		return null;
 	}
 
 }
