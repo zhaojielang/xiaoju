@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.hao123.manager.controller.user.form.UserForm;
 import com.hao123.manager.entity.custom.User;
+import com.hao123.manager.entity.help.ResponseDatagridMode;
 import com.hao123.manager.entity.help.ResponseModel;
 import com.hao123.manager.service.UserService;
 
@@ -32,9 +33,29 @@ public class UserController {
 		return list;
 	}
 	
+	/**
+	 * 插入新用户
+	 * @param form
+	 * @return
+	 */
 	@ResponseBody
 	@RequestMapping("/insertUser")
 	public ResponseModel insertUser(UserForm form){
 		return this.userService.insertUser(form);
 	}
+	
+	/**
+	 * 查询用户信息列表
+	 * 
+	 * @param form 查询条件
+	 * @return 封装成datagrid需要的数据格式
+	 */
+	@ResponseBody
+	@RequestMapping("/queryUserPaging")
+	public ResponseDatagridMode queryUserPaging(UserForm form){
+		return this.userService.queryUserPaging(form);
+	}
+	
+	
+	
 }
