@@ -9,6 +9,7 @@ import com.hao123.manager.entity.help.ResponseModel;
 /**
  * @author 罗乔
  * @time 2015-12-16 10:17:45
+ * 
  *
  */
 public interface UserBiz {
