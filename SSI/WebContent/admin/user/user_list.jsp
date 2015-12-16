@@ -24,6 +24,7 @@
 				          ]],
 			});
 		}
+		
 		//百分比
 	    function fixWidth(percent){
 	        return document.body.clientWidth * percent ; //这里你可以自己做调整  
