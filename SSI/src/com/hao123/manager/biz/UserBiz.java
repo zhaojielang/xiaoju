@@ -7,6 +7,7 @@ import com.hao123.manager.entity.custom.User;
 import com.hao123.manager.entity.help.ResponseModel;
 
 /**
+ * 用户信息管理业务处理
  * @author 罗乔
  * @time 2015-12-16 10:17:45
  * 
