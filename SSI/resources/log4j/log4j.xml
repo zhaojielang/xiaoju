@@ -31,7 +31,6 @@
 		<level value="INFO" />
 	</logger>
 
-
 	<root>
 		<level value="debug" />
 		<appender-ref ref="SSI.AppLog.DailyRollingFile" />
