@@ -18,6 +18,10 @@
   		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
   
+  <listener>
+  		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
+  </listener>
+  
   <!-- 编码过滤器设置 -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>
