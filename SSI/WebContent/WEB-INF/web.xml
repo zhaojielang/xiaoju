@@ -22,6 +22,19 @@
   		<listener-class>org.springframework.security.web.session.HttpSessionEventPublisher</listener-class>
   </listener>
   
+  <filter>
+  		<filter-name>springSecurityFilter</filter-name>
+  		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+  		<init-param>  
+	        <param-name>targetBeanName</param-name>  
+	        <param-value>springSecurityFilterChain</param-value>  
+	    </init-param> 
+  </filter>
+  <filter-mapping>
+  		<filter-name>springSecurityFilter</filter-name>
+  		<url-pattern>/*</url-pattern>
+  </filter-mapping>
+  
   <!-- 编码过滤器设置 -->
 	<filter>
 		<filter-name>encodingFilter</filter-name>
