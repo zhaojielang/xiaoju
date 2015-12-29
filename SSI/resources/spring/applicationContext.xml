@@ -10,4 +10,5 @@
 	<import resource="classpath:/access/applicationContext-datasource.xml" />
 	<import resource="classpath:/app/applicationContext-*-*.xml" />
 	<import resource="classpath:/ehcache/applicationContext-ehcache.xml" />
+	<import resource="classpath:/spring/security/applicationContext-security.xml" />
 </beans>
