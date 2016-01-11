@@ -15,7 +15,8 @@
   <security:http authentication-manager-ref="authenticationManager">
   	<security:intercept-url pattern="/**" access="ROLE_USER"/>
 	<security:form-login login-page="/admin/login.jsp" always-use-default-target="true" default-target-url="/admin/index.jsp"/>
-	<security:logout logout-url=""/>
+	<security:logout logout-url="/admni/logout.jsp" logout-success-url="/admin/login.jsp"/>
+	<security:custom-filter ref="customAuthenticationProcessingFilter" before="LOGOUT_FILTER"/>
   </security:http>
   
   
