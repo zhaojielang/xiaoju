@@ -19,6 +19,10 @@
 	<security:custom-filter ref="customAuthenticationProcessingFilter" before="LOGOUT_FILTER"/>
   </security:http>
   
+  <bean id="customAuthenticationProcessingFilter" class="com.hao123.security.filter.CustomAuthenticationProcessingFilter">
+  		<constructor-arg value="/check/login"/>
+  		<property name="authenticationManager" ref="authenticationManager"/>
+  </bean>
   
   <bean id="authenticationManager" class="org.springframework.security.authentication.ProviderManager">  
        <property name="authenticationEventPublisher" ref="defaultAuthenticationEventPublisher"></property>  
