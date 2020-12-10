@@ -1,0 +1,16 @@
+
+# Common Request Field
+
+**Request-parameters:**
+
+Parameter|Type|Description|Required
+---|---|---|---
+ids|array(long)|扩展-多选批量处理|false
+idsStr|string|扩展-多选批处理-以‘,’分隔|false
+keyWords|string|扩展-模糊查询关键字|false
+queryFromTime|string|扩展-范围起始时间（用于查询）-字符串|false
+queryToTime|string|扩展-范围结束时间（用于查询）-字符串|false
+beginDateTime|date|扩展-范围起始时间（用于查询）-时间类型，不需做转换|false
+endDateTime|date|扩展-范围结束时间（用于查询）-时间类型，不需做转换|false
+page|int|扩展-页码大小 （默认-1）|false
+rows|int|扩展-分页大小 （默认=20）|false

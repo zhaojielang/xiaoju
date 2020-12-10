@@ -1,0 +1,19 @@
+# ${desc}
+<%
+for(doc in list){
+%>
+## ${doc.desc}
+**EnumType:** ${doc.name}
+
+<%if(isNotEmpty(doc.codeDesc)){%>
+
+Code |Description
+---|---
+${doc.codeDesc}
+
+<%}%>
+
+<% } %>
+
+
+
