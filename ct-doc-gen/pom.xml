@@ -19,7 +19,7 @@
 		<dependency>
 		    <groupId>com.ibeetl</groupId>
 		    <artifactId>beetl</artifactId>
-		    <version>3.2.4.RELEASE</version>
+		    <version>3.3.0.RELEASE</version>
 		</dependency>
 		
 		<dependency>

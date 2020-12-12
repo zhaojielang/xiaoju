@@ -1,5 +1,11 @@
 package com.chetong.doc.exception;
 
+/**
+ * 业务枚举
+ * 
+ * @author 罗乔
+ * @time 2020-12-12 16:53:12
+ */
 public enum ProcessCodeEnum {
 	
 	FAIL("fail", "失败");

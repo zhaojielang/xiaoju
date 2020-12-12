@@ -126,7 +126,7 @@ public class DocUtil {
      */
     public static String jsonValueByType(String type){
         String value = randomFieldValue.get(type);
-        if(DocClassUtil.baseClassSimpleName.containsKey(type)){
+        if(DocClassUtil.primitiveClassSimpleName.containsKey(type)){
             return value;
         }else{
             StringBuilder builder = new StringBuilder();
@@ -154,7 +154,7 @@ public class DocUtil {
         if(null == value){
             return jsonValueByType(type);
         }else{
-            if(DocClassUtil.baseClassSimpleName.containsKey(type)){
+            if(DocClassUtil.primitiveClassSimpleName.containsKey(type)){
             	return value;
             }else{
             	return "\""+value+"\"";

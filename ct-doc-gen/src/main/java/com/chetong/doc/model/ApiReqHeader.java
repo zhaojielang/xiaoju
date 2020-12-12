@@ -1,5 +1,11 @@
 package com.chetong.doc.model;
 
+/**
+ * 请求头信息
+ * 
+ * @author 罗乔
+ * @time 2020-12-12 18:28:35
+ */
 public class ApiReqHeader {
 
     /** 请求头的名称 */

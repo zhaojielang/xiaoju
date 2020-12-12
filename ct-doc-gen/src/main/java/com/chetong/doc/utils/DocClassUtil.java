@@ -7,8 +7,8 @@ import java.util.Map;
 
 public class DocClassUtil {
 	
-	protected static final Map<String, String> baseClassSimpleName = new HashMap<>();
 	protected static final Map<String, String> primitiveClassSimpleName = new HashMap<>();
+	protected static final Map<String, String> baseClassSimpleName = new HashMap<>();
 	protected static final Map<String,String>  listClassSimpleName = new HashMap<>();
 	protected static final Map<String,String>  mapClassSimpleName = new HashMap<>();
 	protected static final Map<String,String>  jsonClassSimpleName = new HashMap<>();
@@ -17,6 +17,7 @@ public class DocClassUtil {
 	protected static final String FLOAT_TYPE_NAME = "float";
 	protected static final String DOUBLE_TYPE_NAME = "double";
 	protected static final String BOOLEAN_TYPE_NAME = "boolean";
+	protected static final String CHAR_TYPE_NAME = "int";
 	protected static final String STRING_TYPE_NAME = "string";
 	protected static final String DATE_TYPE_NAME = "date";
 	protected static final String MAP_TYPE_NAME = "map";
@@ -29,60 +30,62 @@ public class DocClassUtil {
 	protected static final String COMMA = ",";
 	protected static final String LEFT_ANGLE_BRACKETS = "<";
 	protected static final String RIGHT_ANGLE_BRACKETS = ">";
+	protected static final String EMPTY_STR = "";
+	protected static final String SPACE_KEY = " ";
 	
 	static {
-		baseClassSimpleName.put("java.lang.Integer", INT_TYPE_NAME);
-		baseClassSimpleName.put("Integer", INT_TYPE_NAME);
-		baseClassSimpleName.put("int", INT_TYPE_NAME);
-		baseClassSimpleName.put("java.lang.Long", LONG_TYPE_NAME);
-		baseClassSimpleName.put("Long", LONG_TYPE_NAME);
-		baseClassSimpleName.put("long", LONG_TYPE_NAME);
-		baseClassSimpleName.put("java.lang.Double", DOUBLE_TYPE_NAME);
-		baseClassSimpleName.put("Double", DOUBLE_TYPE_NAME);
-		baseClassSimpleName.put(DOUBLE_TYPE_NAME, DOUBLE_TYPE_NAME);
-		baseClassSimpleName.put("java.lang.Float", FLOAT_TYPE_NAME);
-		baseClassSimpleName.put("Float", FLOAT_TYPE_NAME);
-		baseClassSimpleName.put(FLOAT_TYPE_NAME, FLOAT_TYPE_NAME);
-		baseClassSimpleName.put("java.lang.Short", INT_TYPE_NAME);
-		baseClassSimpleName.put("Short", INT_TYPE_NAME);
-		baseClassSimpleName.put("short", INT_TYPE_NAME);
-		baseClassSimpleName.put("java.math.BigDecimal", DOUBLE_TYPE_NAME);
-		baseClassSimpleName.put("BigDecimal", DOUBLE_TYPE_NAME);
-		baseClassSimpleName.put("java.math.BigInteger", LONG_TYPE_NAME);
-		baseClassSimpleName.put("BigInteger", LONG_TYPE_NAME);
-		baseClassSimpleName.put("java.lang.Boolean", BOOLEAN_TYPE_NAME);
-		baseClassSimpleName.put("Boolean", BOOLEAN_TYPE_NAME);
-		baseClassSimpleName.put(BOOLEAN_TYPE_NAME, BOOLEAN_TYPE_NAME);
-		baseClassSimpleName.put("java.lang.Byte", INT_TYPE_NAME);
-		baseClassSimpleName.put("Byte", INT_TYPE_NAME);
-		baseClassSimpleName.put("byte", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("byte", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("Byte", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Byte", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("int", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("short", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("Short", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Short", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("Integer", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Integer", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("long", LONG_TYPE_NAME);
+		primitiveClassSimpleName.put("Long", LONG_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Long", LONG_TYPE_NAME);
+		primitiveClassSimpleName.put(DOUBLE_TYPE_NAME, DOUBLE_TYPE_NAME);
+		primitiveClassSimpleName.put("Double", DOUBLE_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Double", DOUBLE_TYPE_NAME);
+		primitiveClassSimpleName.put(FLOAT_TYPE_NAME, FLOAT_TYPE_NAME);
+		primitiveClassSimpleName.put("Float", FLOAT_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Float", FLOAT_TYPE_NAME);
+		primitiveClassSimpleName.put("java.math.BigDecimal", DOUBLE_TYPE_NAME);
+		primitiveClassSimpleName.put("BigDecimal", DOUBLE_TYPE_NAME);
+		primitiveClassSimpleName.put("java.math.BigInteger", LONG_TYPE_NAME);
+		primitiveClassSimpleName.put("BigInteger", LONG_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Boolean", BOOLEAN_TYPE_NAME);
+		primitiveClassSimpleName.put("Boolean", BOOLEAN_TYPE_NAME);
+		primitiveClassSimpleName.put(BOOLEAN_TYPE_NAME, BOOLEAN_TYPE_NAME);
+		primitiveClassSimpleName.put("char", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("Char", CHAR_TYPE_NAME);
+		primitiveClassSimpleName.put("Character", CHAR_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Character", CHAR_TYPE_NAME);
 	}
 	
 	static {
-		primitiveClassSimpleName.put("java.lang.Character", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("Character", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("Char", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("char", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.String", STRING_TYPE_NAME);
-		primitiveClassSimpleName.put("String", STRING_TYPE_NAME);
-		primitiveClassSimpleName.put("java.util.Date", DATE_TYPE_NAME);
-		primitiveClassSimpleName.put("Date", DATE_TYPE_NAME);
-		primitiveClassSimpleName.put("java.sql.Timestamp", DATE_TYPE_NAME);
-		primitiveClassSimpleName.put("Timestamp", DATE_TYPE_NAME);
-		primitiveClassSimpleName.put("java.time.LocalDateTime", DATE_TYPE_NAME);
-		primitiveClassSimpleName.put("LocalDateTime", DATE_TYPE_NAME);
-		primitiveClassSimpleName.put("java.time.LocalDate", DATE_TYPE_NAME);
-		primitiveClassSimpleName.put("LocalDate", DATE_TYPE_NAME);
-		primitiveClassSimpleName.put("java.util.Map", MAP_TYPE_NAME);
-		primitiveClassSimpleName.put("Map", MAP_TYPE_NAME);
-		primitiveClassSimpleName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
-		primitiveClassSimpleName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
-		primitiveClassSimpleName.put("JSONObject", JSON_OBJ_TYPE_NAME);
-		primitiveClassSimpleName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
-		primitiveClassSimpleName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
-		primitiveClassSimpleName.put("JSONArray", JSON_ARR_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.object", OBJ_TYPE_NAME);
-		primitiveClassSimpleName.put("Object", OBJ_TYPE_NAME);
+		baseClassSimpleName.put("String", STRING_TYPE_NAME);
+		baseClassSimpleName.put("java.lang.String", STRING_TYPE_NAME);
+		baseClassSimpleName.put("Date", DATE_TYPE_NAME);
+		baseClassSimpleName.put("java.util.Date", DATE_TYPE_NAME);
+		baseClassSimpleName.put("Timestamp", DATE_TYPE_NAME);
+		baseClassSimpleName.put("java.sql.Timestamp", DATE_TYPE_NAME);
+		baseClassSimpleName.put("LocalDateTime", DATE_TYPE_NAME);
+		baseClassSimpleName.put("java.time.LocalDateTime", DATE_TYPE_NAME);
+		baseClassSimpleName.put("LocalDate", DATE_TYPE_NAME);
+		baseClassSimpleName.put("java.time.LocalDate", DATE_TYPE_NAME);
+		baseClassSimpleName.put("Map", MAP_TYPE_NAME);
+		baseClassSimpleName.put("java.util.Map", MAP_TYPE_NAME);
+		baseClassSimpleName.put("JSONObject", JSON_OBJ_TYPE_NAME);
+		baseClassSimpleName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
+		baseClassSimpleName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
+		baseClassSimpleName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
+		baseClassSimpleName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
+		baseClassSimpleName.put("JSONArray", JSON_ARR_TYPE_NAME);
+		baseClassSimpleName.put("java.lang.object", OBJ_TYPE_NAME);
+		baseClassSimpleName.put("Object", OBJ_TYPE_NAME);
 	}
 	
 	static {
@@ -95,8 +98,9 @@ public class DocClassUtil {
 		listClassSimpleName.put("java.util.SortedSet", LIST_TYPE_NAME);
 		listClassSimpleName.put("java.util.Collection", LIST_TYPE_NAME);
 		listClassSimpleName.put("java.util.ArrayDeque", LIST_TYPE_NAME);
-		listClassSimpleName.put("com.chetong.aic.page.domain.PageList", PAGE_LIST_TYPE_NAME);
 		listClassSimpleName.put("PageList", PAGE_LIST_TYPE_NAME);
+		listClassSimpleName.put("com.chetong.aic.page.domain.PageList", PAGE_LIST_TYPE_NAME);
+		listClassSimpleName.put("com.baobei.health.page.domain.PageList", PAGE_LIST_TYPE_NAME);
 	}
 	
 	static {
@@ -112,12 +116,14 @@ public class DocClassUtil {
 	}
 	
 	static {
-		jsonClassSimpleName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
-		jsonClassSimpleName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
 		jsonClassSimpleName.put("JSONObject", JSON_OBJ_TYPE_NAME);
-		jsonClassSimpleName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
-		jsonClassSimpleName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
 		jsonClassSimpleName.put("JSONArray", JSON_ARR_TYPE_NAME);
+		jsonClassSimpleName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
+		jsonClassSimpleName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
+		jsonClassSimpleName.put("com.google.gson.JsonObject", JSON_ARR_TYPE_NAME);
+		jsonClassSimpleName.put("com.google.gson.JsonArray", JSON_ARR_TYPE_NAME);
+		jsonClassSimpleName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
+		jsonClassSimpleName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
 	}
 	
     /**
@@ -141,7 +147,7 @@ public class DocClassUtil {
 			}
             return classNameFix(arr);
         } else {
-            return returnType.split(" ");
+            return returnType.split(SPACE_KEY);
         }
     }
 
@@ -166,7 +172,15 @@ public class DocClassUtil {
             return gicName;
         }
     }
-
+    
+    public static String getArraySimpleName(String arrName) {
+    	if (arrName.indexOf('[') != -1) {
+            return arrName.substring(0, arrName.indexOf('['));
+        } else {
+            return arrName;
+        }
+    }
+    
     /**
      * Automatic repair of generic split class names
      *
@@ -178,7 +192,7 @@ public class DocClassUtil {
         List<Integer> indexList = new ArrayList<>();
         int globIndex = 0;
         for (int i = 0; i < arr.length; i++) {
-        	arr[i] = arr[i].replaceAll(" ", "");
+        	arr[i] = arr[i].replaceAll(SPACE_KEY, EMPTY_STR);
             if (!classes.isEmpty()) {
                 int index = classes.size() - 1;
                 if (!DocUtil.isClassName(classes.get(index))) {
@@ -231,8 +245,8 @@ public class DocClassUtil {
     public static String[] getMapKeyValueType(String gName) {
         if(gName.indexOf(LEFT_ANGLE_BRACKETS) != -1){
             String[] arr = new String[2];
-            String key = gName.substring(gName.indexOf(LEFT_ANGLE_BRACKETS) + 1, gName.indexOf(COMMA)).replaceAll(" ", "");
-            String value = gName.substring(gName.indexOf(COMMA) + 1, gName.lastIndexOf(RIGHT_ANGLE_BRACKETS)).replaceAll(" ", "");
+            String key = gName.substring(gName.indexOf(LEFT_ANGLE_BRACKETS) + 1, gName.indexOf(COMMA)).replaceAll(SPACE_KEY, EMPTY_STR);
+            String value = gName.substring(gName.indexOf(COMMA) + 1, gName.lastIndexOf(RIGHT_ANGLE_BRACKETS)).replaceAll(SPACE_KEY, EMPTY_STR);
             arr[0] = key;
             arr[1] = value;
             return arr;
@@ -243,32 +257,26 @@ public class DocClassUtil {
     
     public static String processTypeNameForParams(String javaTypeName) {
     	String typeName;
-        if (javaTypeName.length() == 1) {
-        	typeName =  OBJ_TYPE_NAME;
-        } else if (javaTypeName.contains("[")) {
-        	typeName = "array("+primitiveClassSimpleName.get(javaTypeName.substring(0, javaTypeName.indexOf('[')))+")";
+        if (primitiveClassSimpleName.containsKey(javaTypeName)) {
+        	typeName = primitiveClassSimpleName.get(javaTypeName);
         } else if (baseClassSimpleName.containsKey(javaTypeName)) {
         	typeName = baseClassSimpleName.get(javaTypeName);
-        } else if (primitiveClassSimpleName.containsKey(javaTypeName)) {
-        	typeName = primitiveClassSimpleName.get(javaTypeName);
+        } else if (listClassSimpleName.containsKey(javaTypeName)) {
+        	typeName = listClassSimpleName.get(javaTypeName);
+        } else if (javaTypeName.contains("[")) {
+        	typeName = "array("+processTypeNameForParams(getArraySimpleName(javaTypeName))+")";
         } else if (javaTypeName.startsWith("java.text")) {
         	typeName = FORMAT_TYPE_NAME;
 		} else {
 			typeName = OBJ_TYPE_NAME;
 		}
-        return typeName == null ? OBJ_TYPE_NAME : typeName;
+        return typeName;
     }
 
     public static boolean isPrimitive(String type) {
-    	if (baseClassSimpleName.containsKey(type)) {
-			return true;
-		} else if (primitiveClassSimpleName.containsKey(type)) {
-			return true;
-		} else if (type.startsWith("java.text")) {
-			return true;
-		} else {
-			return false;
-		}
+    	return primitiveClassSimpleName.containsKey(type) 
+    			|| baseClassSimpleName.containsKey(type)
+    			|| type.startsWith("java.text");
     }
 
     public static boolean isCollection(String type) {

@@ -3,7 +3,7 @@ package com.chetong.doc.model;
 import java.io.Serializable;
 
 /**
- * api文档
+ * API文档内容
  */
 public class ApiDocContent implements Serializable {
 

@@ -13,7 +13,7 @@ import com.chetong.doc.exception.ProcessCodeEnum;
  */
 public class NumberUtil {
 	
-	public static DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.0000");
+	public static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.0000");
     
     private NumberUtil() {
     }

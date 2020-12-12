@@ -4,13 +4,10 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import com.chetong.doc.constants.GlobalConstants;
@@ -45,19 +42,32 @@ import com.thoughtworks.qdox.model.expression.Expression;
  */
 public class SourceBuilder {
 	
-	private static final String JSON_CONTENT_TYPE = "application/json; charset=utf-8";
+	private static final String CONTENT_TYPE = "application/json; charset=utf-8";
+	private static final String METHOD_TYPE = "post";
 	private static final String NO_COMENT_DESC = "No comments found.";
 	private static final String PARAM_NAME = "param";
 	private static final String WARN_DESC = "{\"waring\":\"You may have used non-display generics.\"}";
-	private static final String SPACE_KEY = " ";
 	private static final String LINE_BREAK_KEY = "\n";
 	private static final String TRUE_LINE_BREAK_KEY = "|true\n";
 	private static final String MAP_KEY= "\"mapKey\":";
 	private static final String ANNOTATION_VALUE_KEY = "value";
+	private static final String MODIFIER_PRIVATE = "private";
+	private static final String MODIFIER_PUBLIC = "public";
 	private static final String CONNECTOR = ".";
 	private static final String COMMA = ",";
 	private static final String LEFT_ANGLE_BRACKETS = "<";
 	private static final String RIGHT_ANGLE_BRACKETS = ">";
+	private static final String LEFT_CURLY_BRACKETS = "{";
+	private static final String RIGHT_CURLY_BRACKETS = "}";
+	private static final String LEFT_BRACKETS = "[";
+	private static final String RIGHT_BRACKETS = "]";
+	private static final String DOUBLE_QUOTATION  = "\"";
+	private static final String SLASH  = "/";
+	private static final String BACK_SLASH  = "\\";
+	private static final String VERTICAL_SEPARATORS = "|";
+	private static final String COLON = ":";
+	private static final String EMPTY_STR = "";
+	private static final String SPACE_STR = " ";
 	
 	/**扫描class文件总数Key*/
 	public static final String SCAN_CLASS_COUNT_KEY = "scanClassCounter";
@@ -72,17 +82,19 @@ public class SourceBuilder {
 	private List<JavaClass> javaClasses = new ArrayList<>();
 	private String packageMatch;
 	private List<ApiReqHeader> headers;
-	private String appUrl;
-
-	protected static final ExecutorService THREAD_POOL = Executors.newCachedThreadPool();
+	private String basePathUrl;
+	private String routeReqUrl;
+	private ExecutorService threadPool;
+	private Map<String, Integer> counterMap;
 	
-	protected static final Map<String, Integer> COUNTER_MAP = new ConcurrentHashMap<>();
-	
-	public SourceBuilder(ApiConfig config) {
-		this.appUrl = config.getBasePathUrl();
+	public SourceBuilder(ApiConfig config, ExecutorService threadPool, Map<String, Integer> counterMap) {
+		this.threadPool = threadPool;
+		this.counterMap = counterMap;
+		this.basePathUrl = config.getBasePathUrl();
 		this.packageMatch = config.getPackageFilters();
 		loadJavaFiles(config);
 		this.headers = config.getRequestHeaders();
+		this.routeReqUrl = this.basePathUrl + "/**/*.do";
 	}
 
 	/**
@@ -93,20 +105,18 @@ public class SourceBuilder {
 		this.builder = new JavaProjectBuilder();
 		for (SourcePath path : paths) {
 			String strPath = path.getPath();
-			if (StringUtil.isNotEmpty(strPath)) {
-				strPath = strPath.replace("\\", "/");
-				builder.addSourceTree(new File(strPath));
-			}
+			strPath = strPath.replace(BACK_SLASH, SLASH);
+			builder.addSourceTree(new File(strPath));
 		}
 		this.javaClasses.addAll(builder.getClasses());
-		COUNTER_MAP.put(SCAN_CLASS_COUNT_KEY, javaClasses.size());
+		counterMap.put(SCAN_CLASS_COUNT_KEY, javaClasses.size());
 	}
 
-	public List<Future<?>> getApiDocData() {
-		List<Future<?>> futures = new ArrayList<>();
-		COUNTER_MAP.put(CONTROLLER_COUNT_KEY, 0);
-		COUNTER_MAP.put(SERVICE_COUNT_KEY, 0);
-		COUNTER_MAP.put(ENUM_COUNT_KEY, 0);
+	public List<Future<Object>> getApiDocData() {
+		List<Future<Object>> futures = new ArrayList<>();
+		counterMap.put(CONTROLLER_COUNT_KEY, 0);
+		counterMap.put(SERVICE_COUNT_KEY, 0);
+		counterMap.put(ENUM_COUNT_KEY, 0);
 		
 		// 服务序号
 		int docIndex = 4;
@@ -122,16 +132,16 @@ public class SourceBuilder {
 			if (checkService(cls)) {
 				final int index = docIndex;
 				docIndex = docIndex +1;
-				Future<ApiDoc> future = THREAD_POOL.submit(new Callable<ApiDoc>() {
+				Future<Object> future = threadPool.submit(new Callable<Object>() {
 					@Override
-					public ApiDoc call() throws Exception {
+					public Object call() throws Exception {
 						List<JavaAnnotation> classAnnotations = cls.getAnnotations();
 						String serviceNameValue = null;
 						for (JavaAnnotation annotation : classAnnotations) {
 							String annotationName = annotation.getType().getName();
 							if (GlobalConstants.SERVICE.equals(annotationName) || GlobalConstants.SERVICE_FULLY.equals(annotationName)) {
 								serviceNameValue = annotation.getNamedParameter(ANNOTATION_VALUE_KEY).toString();
-								serviceNameValue = serviceNameValue.replaceAll("\"", "");
+								serviceNameValue = serviceNameValue.replaceAll(DOUBLE_QUOTATION, EMPTY_STR);
 							}
 						}
 						
@@ -148,7 +158,7 @@ public class SourceBuilder {
 							ApiDoc apiDoc = new ApiDoc();
 							apiDoc.setIndex(index);
 							apiDoc.setName(serviceNameValue);
-							apiDoc.setDesc(index+SPACE_KEY+clsComment);
+							apiDoc.setDesc(index+SPACE_STR+clsComment);
 							apiDoc.setServiceApiDocs(apiMethodDocs);
 							return apiDoc;
 						}
@@ -159,11 +169,11 @@ public class SourceBuilder {
 			} else if (checkController(cls)) {
 				final int index = docIndex;
 				docIndex = docIndex +1;
-				Future<ApiDoc> future = THREAD_POOL.submit(new Callable<ApiDoc>() {
+				Future<Object> future = threadPool.submit(new Callable<Object>() {
 					@Override
-					public ApiDoc call() throws Exception {
+					public Object call() throws Exception {
 						List<JavaAnnotation> classAnnotations = cls.getAnnotations();
-						String baseReqPath = null;
+						StringBuilder baseReqPath = new StringBuilder(basePathUrl);
 						for (JavaAnnotation annotation : classAnnotations) {
 							String annotationName = annotation.getType().getName();
 							if (GlobalConstants.REQUEST_MAPPING.equals(annotationName) 
@@ -172,15 +182,13 @@ public class SourceBuilder {
 									|| GlobalConstants.POST_MAPPING_FULLY.equals(annotationName)
 									|| GlobalConstants.GET_MAPPING.equals(annotationName)
 									|| GlobalConstants.GET_MAPPING_FULLY.equals(annotationName)) {
-								baseReqPath = annotation.getNamedParameter(ANNOTATION_VALUE_KEY).toString();
-								baseReqPath = baseReqPath.replaceAll("\"", "");
+								String controllerReqPath = annotation.getNamedParameter(ANNOTATION_VALUE_KEY).toString().replaceAll(DOUBLE_QUOTATION, EMPTY_STR);
+								if (!controllerReqPath.startsWith(SLASH)) {
+									baseReqPath.append(SLASH);
+								}
+								baseReqPath.append(controllerReqPath);
+								break;
 							}
-						}
-						
-						if (baseReqPath==null) {
-							baseReqPath = "";
-						} else {
-							baseReqPath = baseReqPath.replaceAll("\"", "");
 						}
 						
 						List<ApiDocContent> apiMethodDocs = buildControllerMethod(index, cls, baseReqPath);
@@ -188,7 +196,7 @@ public class SourceBuilder {
 							ApiDoc apiDoc = new ApiDoc();
 							apiDoc.setIndex(index);
 							apiDoc.setName(cls.getName());
-							apiDoc.setDesc(index+SPACE_KEY+clsComment);
+							apiDoc.setDesc(index+SPACE_STR+clsComment);
 							apiDoc.setControllerApiDocs(apiMethodDocs);
 							return apiDoc;
 						}
@@ -203,26 +211,26 @@ public class SourceBuilder {
 					if (enumConstantArguments !=null && enumConstantArguments.size()>=2) {
 						final int index = enumIndex;
 						enumIndex = enumIndex +1;
-						Future<ApiResultCode> future = THREAD_POOL.submit(new Callable<ApiResultCode>() {
+						Future<Object> future = threadPool.submit(new Callable<Object>() {
 							@Override
-							public ApiResultCode call() throws Exception {
+							public Object call() throws Exception {
 								ApiResultCode resultCode = new ApiResultCode();
 								resultCode.setName(cls.getName());
-								resultCode.setDesc(3+CONNECTOR+index+SPACE_KEY+clsComment);
+								resultCode.setDesc(3+CONNECTOR+index+SPACE_STR+clsComment);
 								StringBuilder codeDesc = new StringBuilder();
 								for (JavaField javaField : fields) {
-									if (javaField.getModifiers().toString().indexOf("private") == -1
+									if (javaField.getModifiers().toString().indexOf(MODIFIER_PRIVATE) == -1
 											&& javaField.getEnumConstantArguments() != null) {
 										List<Expression> arguments = javaField.getEnumConstantArguments();
 										codeDesc.append(arguments.get(0));
-										codeDesc.append('|');
+										codeDesc.append(VERTICAL_SEPARATORS);
 										codeDesc.append(arguments.get(1));
 										codeDesc.append(LINE_BREAK_KEY);
 									}
 								}
-								resultCode.setCodeDesc(codeDesc.toString().replaceAll("\"", ""));
+								resultCode.setCodeDesc(codeDesc.toString().replaceAll(DOUBLE_QUOTATION, EMPTY_STR));
 								//添加计数
-								COUNTER_MAP.put(ENUM_COUNT_KEY, COUNTER_MAP.get(ENUM_COUNT_KEY)+1);
+								counterMap.put(ENUM_COUNT_KEY, counterMap.get(ENUM_COUNT_KEY)+1);
 								return resultCode;
 							}
 						});
@@ -296,9 +304,9 @@ public class SourceBuilder {
 		int index = 1;
 		for (JavaMethod method : methods) {
 			// 忽略、私有、没有接口说明不是服务
-			if (null != method.getTagByName(GlobalConstants.IGNORE_TAG)
-					|| method.getModifiers().contains("private")
-					|| interfaceCls == null) {
+			if (interfaceCls == null
+					|| method.getTagByName(GlobalConstants.IGNORE_TAG) != null
+					|| method.getModifiers().contains(MODIFIER_PRIVATE)) {
 				continue;
 			}
 
@@ -313,7 +321,7 @@ public class SourceBuilder {
 				methodDocument = interfaceJavaMethod.getComment();
 			}
 			
-			List<String> isRequireds = new LinkedList<>();
+			List<String> isRequireds = new ArrayList<>();
 			List<JavaAnnotation> annotations = method.getAnnotations();
 			for (JavaAnnotation annotation : annotations) {
 				String annotationName = annotation.getType().getName();
@@ -351,7 +359,7 @@ public class SourceBuilder {
 						|| GlobalConstants.LOG_TAIL_FULLY.equals(annotationName)) {
 					String tailDesc = annotation.getNamedParameter(ANNOTATION_VALUE_KEY).toString();
 					if (StringUtil.isNotEmpty(tailDesc)) {
-						methodDocument = tailDesc.replace("\"", "");
+						methodDocument = tailDesc.replace(DOUBLE_QUOTATION, EMPTY_STR);
 					}
 				}
 			}
@@ -362,20 +370,19 @@ public class SourceBuilder {
 			}
 			
 			//添加计数
-			COUNTER_MAP.put(SERVICE_COUNT_KEY, COUNTER_MAP.get(SERVICE_COUNT_KEY)+1);
-
+			counterMap.put(SERVICE_COUNT_KEY, counterMap.get(SERVICE_COUNT_KEY)+1);
 			
-			String requestParams = getCommentTag(method, PARAM_NAME, cls.getCanonicalName(), isRequireds);
-			String requestJson = buildReqJson(method);
+			String requestParams = buildMethodRequest(method, PARAM_NAME, cls.getCanonicalName(), isRequireds);
+			StringBuilder requestJson = buildReqJson(method);
 			String responseParams = buildMethodReturn(method, cls.getGenericFullyQualifiedName());
 			String responseJson = buildReturnJson(method);
 			
 			ApiDocContent apiMethodDoc = new ApiDocContent();
-			apiMethodDoc.setDesc(parentIndex+CONNECTOR+index+SPACE_KEY+methodDocument);
-			apiMethodDoc.setUrl(this.appUrl+"/**/*.do");
+			apiMethodDoc.setDesc(parentIndex+CONNECTOR+index+SPACE_STR+methodDocument);
+			apiMethodDoc.setUrl(this.routeReqUrl);
 			apiMethodDoc.setHeaders(createHeaders(this.headers));
-			apiMethodDoc.setContentType(JSON_CONTENT_TYPE);
-			apiMethodDoc.setType("POST");
+			apiMethodDoc.setContentType(CONTENT_TYPE);
+			apiMethodDoc.setType(METHOD_TYPE);
 			apiMethodDoc.setName(method.getName());
 			apiMethodDoc.setServiceName(serviceName + CONNECTOR + method.getName());
 			apiMethodDoc.setRequestParams(requestParams);
@@ -388,7 +395,7 @@ public class SourceBuilder {
 		return methodDocList;
 	}
 	
-	public List<ApiDocContent> buildControllerMethod(int parentIndex, final JavaClass cls, String baseReqPath) {
+	public List<ApiDocContent> buildControllerMethod(int parentIndex, final JavaClass cls, StringBuilder controllerReqPath) {
 		List<JavaMethod> methods = cls.getMethods();
 		List<ApiDocContent> methodDocList = new ArrayList<>(methods.size());
 		
@@ -398,54 +405,42 @@ public class SourceBuilder {
 			List<String> modifiers = method.getModifiers();
 			// 没有修饰符、没有注释，忽略，不生成
 			if (modifiers.isEmpty() 
-					|| !"public".equals(modifiers.get(0))
-					|| StringUtil.isEmpty(method.getComment())
+					|| !MODIFIER_PUBLIC.equals(modifiers.get(0))
+					|| StringUtil.isEmpty(methodDocument)
 					|| null != method.getTagByName(GlobalConstants.IGNORE_TAG)) {
 				continue;
 			}
 			
 			//添加计数
-			COUNTER_MAP.put(CONTROLLER_COUNT_KEY, COUNTER_MAP.get(CONTROLLER_COUNT_KEY)+1);
+			counterMap.put(CONTROLLER_COUNT_KEY, counterMap.get(CONTROLLER_COUNT_KEY)+1);
 			
-			String reqPath = null;
-			List<String> isRequireds = new LinkedList<>();
+			StringBuilder apiReqUrl = new StringBuilder(controllerReqPath);
+			
+			List<String> isRequireds = new ArrayList<>();
 			List<JavaAnnotation> annotations = method.getAnnotations();
 			for (JavaAnnotation annotation : annotations) {
 				String annotationName = annotation.getType().getName();
-				if (GlobalConstants.LOG_TAIL.equals(annotationName) || GlobalConstants.LOG_TAIL_FULLY.equals(annotationName)) {
-					String tailDesc = annotation.getNamedParameter(ANNOTATION_VALUE_KEY).toString();
-					if (StringUtil.isNotEmpty(tailDesc)) {
-						methodDocument = tailDesc.replace("\"", "");
+				if (GlobalConstants.REQUEST_MAPPING.equals(annotationName) 
+						|| GlobalConstants.REQUEST_MAPPING_FULLY.equals(annotationName)) {
+					String methodReqPath = annotation.getNamedParameter(ANNOTATION_VALUE_KEY).toString().replaceAll(DOUBLE_QUOTATION, EMPTY_STR);
+					if (!methodReqPath.startsWith(SLASH)) {
+						apiReqUrl.append(SLASH);
 					}
-				}
-				
-				if (GlobalConstants.REQUEST_MAPPING.equals(annotationName) || GlobalConstants.REQUEST_MAPPING_FULLY.equals(annotationName)) {
-					reqPath = annotation.getNamedParameter(ANNOTATION_VALUE_KEY).toString();
+					apiReqUrl.append(methodReqPath);
+					break;
 				}
 			}
 			
-			if (reqPath==null) {
-				reqPath = "";
-			} else {
-				reqPath = reqPath.replaceAll("\"", "");
-				reqPath = reqPath.replaceAll(".do", "");
-			}
-
-			String apiReqUrl = baseReqPath+reqPath;
-			if (!apiReqUrl.startsWith("/")) {
-				apiReqUrl = "/"+apiReqUrl;
-			}
-			
-			String requestParams = getCommentTag(method, PARAM_NAME, cls.getCanonicalName(), isRequireds);
-			String requestJson = buildReqJson(method);
+			String requestParams = buildMethodRequest(method, PARAM_NAME, cls.getCanonicalName(), isRequireds);
+			StringBuilder requestJson = buildReqJson(method);
 			String responseParams = buildMethodReturn(method, cls.getGenericFullyQualifiedName());
 			String responseJson = buildReturnJson(method);
 			
 			ApiDocContent apiDocContent = new ApiDocContent();
-			apiDocContent.setDesc(parentIndex+CONNECTOR+index+SPACE_KEY+methodDocument);
-			apiDocContent.setUrl(this.appUrl+apiReqUrl+".do");
+			apiDocContent.setDesc(parentIndex+CONNECTOR+index+SPACE_STR+methodDocument);
+			apiDocContent.setUrl(apiReqUrl.toString());
 			apiDocContent.setHeaders(createHeaders(this.headers));
-			apiDocContent.setType("POST");
+			apiDocContent.setType(METHOD_TYPE);
 			apiDocContent.setName(method.getName());
 			apiDocContent.setRequestParams(requestParams);
 			apiDocContent.setRequestUsage(JsonFormatUtil.formatJson(requestJson));
@@ -463,8 +458,8 @@ public class SourceBuilder {
 			headers = new ArrayList<>(0);
 		}
 		for (ApiReqHeader header : headers) {
-			sb.append(header.getName()).append('|');
-			sb.append(header.getType()).append('|');
+			sb.append(header.getName()).append(VERTICAL_SEPARATORS);
+			sb.append(header.getType()).append(VERTICAL_SEPARATORS);
 			sb.append(header.getDesc()).append(LINE_BREAK_KEY);
 		}
 		return sb.toString();
@@ -486,7 +481,7 @@ public class SourceBuilder {
 				if (DocClassUtil.isPrimitive(gicName)) {
 					buildReturn.append(primitiveReturnRespComment("array of " + DocClassUtil.processTypeNameForParams(gicName)));
 				}else {
-					buildParams(gicName, "", 0, new LinkedList<String>(), "", buildReturn);
+					buildParams(gicName, EMPTY_STR, 0, new ArrayList<String>(), EMPTY_STR, buildReturn);
 				}
 			}
 		} else if (DocClassUtil.isMap(typeName)) {
@@ -494,15 +489,15 @@ public class SourceBuilder {
 			if (keyValue.length != 0 && DocClassUtil.isPrimitive(keyValue[1])) {
 				buildReturn.append(primitiveReturnRespComment("key value"));
 			} else {
-				buildParams(keyValue[1], "", 0, new LinkedList<String>(), "", buildReturn);
+				buildParams(keyValue[1], EMPTY_STR, 0, new ArrayList<String>(), EMPTY_STR, buildReturn);
 			}
 		} else if (StringUtil.isNotEmpty(returnType)) {
-			buildParams(returnType, "", 0, new LinkedList<String>(), "", buildReturn);
+			buildParams(returnType, EMPTY_STR, 0, new ArrayList<String>(), EMPTY_STR, buildReturn);
 		}
 		return buildReturn.toString();
 	}
 
-	private void buildParams(String className, String pre, int i, List<String> requiredFields, String parentFieldName, StringBuilder params) {
+	private void buildParams(String className, String pre, int i, List<String> requiredFields, String parentFieldName, StringBuilder docContent) {
 		String simpleName = DocClassUtil.getSimpleName(className);
 		String[] globGicName = DocClassUtil.getSimpleGicName(className);
 		JavaClass cls = builder.getClassByName(simpleName);
@@ -510,18 +505,18 @@ public class SourceBuilder {
 		List<JavaField> fields = getFields(cls, 0);
 		int n = 0;
 		if (DocClassUtil.isPrimitive(className)) {
-			params.append(primitiveReturnRespComment(DocClassUtil.processTypeNameForParams(className)));
+			docContent.append(primitiveReturnRespComment(DocClassUtil.processTypeNameForParams(className)));
 		} else if (DocClassUtil.isCollection(simpleName) || DocClassUtil.isArray(simpleName)) {
 			if (!DocClassUtil.isCollection(globGicName[0])) {
 				String gicName = globGicName[0];
 				if (DocClassUtil.isArray(gicName)) {
-					gicName = gicName.substring(0, gicName.indexOf('['));
+					gicName = gicName.substring(0, gicName.indexOf(LEFT_BRACKETS));
 				}
-				buildParams(gicName, pre, i + 1, requiredFields, parentFieldName, params);
+				buildParams(gicName, pre, i + 1, requiredFields, parentFieldName, docContent);
 			}
 		} else if (DocClassUtil.isMap(simpleName)) {
 			if (globGicName.length == 2) {
-				buildParams(globGicName[1], pre, i + 1, requiredFields, parentFieldName, params);
+				buildParams(globGicName[1], pre, i + 1, requiredFields, parentFieldName, docContent);
 			}
 		} else {
 			out: 
@@ -550,74 +545,75 @@ public class SourceBuilder {
 						}
 					}
 					
-					String strRequired = this.isRequired(fieldName, requiredFields,parentFieldName);
+					String strRequired = this.isRequired(fieldName, requiredFields, parentFieldName);
 					for (JavaAnnotation annotation : javaAnnotations) {
 						String annotationName = annotation.getType().getSimpleName();
 						if ("JsonIgnore".equals(annotationName)) {
 							continue out;
 						} else if ("JSONField".equals(annotationName) && null != annotation.getProperty("name")) {
-							fieldName = annotation.getProperty("name").toString().replace("\"", "");
+							fieldName = annotation.getProperty("name").toString().replace(DOUBLE_QUOTATION, EMPTY_STR);
 						}
 					}
 
 					// cover comment
 					String comment = field.getComment();
 					if (DocClassUtil.isPrimitive(subTypeName)) {
-						params.append(pre).append(fieldName).append('|').append(DocClassUtil.processTypeNameForParams(subTypeName)).append('|');
+						docContent.append(pre).append(fieldName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(subTypeName)).append(VERTICAL_SEPARATORS);
 						if (StringUtil.isNotEmpty(comment)) {
-							comment = comment.replaceAll("\r|\n", SPACE_KEY);
-							params.append(comment).append('|').append(strRequired).append(LINE_BREAK_KEY);
+							comment = comment.replaceAll("\r|\n", SPACE_STR);
+							docContent.append(comment).append(VERTICAL_SEPARATORS).append(strRequired).append(LINE_BREAK_KEY);
 						} else {
-							params.append(NO_COMENT_DESC).append('|').append(strRequired).append(LINE_BREAK_KEY);
+							docContent.append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(strRequired).append(LINE_BREAK_KEY);
 						}
 					} else {
-						params.append(pre);
+						docContent.append(pre);
 						StringBuilder fieldTypeDesc = new StringBuilder();
 						if (DocClassUtil.isCollection(subTypeName)) {
-							fieldTypeDesc.append(DocClassUtil.lowerFirstCapse(subTypeName.substring(subTypeName.lastIndexOf(CONNECTOR) + 1)));
+							fieldTypeDesc.append(DocClassUtil.processTypeNameForParams(subTypeName));
 							String[] simpleGicName = DocClassUtil.getSimpleGicName(fieldGicName);
 							fieldTypeDesc.append('(').append(simpleGicName.length == 1 && DocClassUtil.isPrimitive(simpleGicName[0]) ? DocClassUtil.processTypeNameForParams(simpleGicName[0]) : "obj").append(')'); 
 						} else if (DocClassUtil.isArray(subTypeName)) {
-							fieldTypeDesc.append("array("+DocClassUtil.processTypeNameForParams(subTypeName.substring(0, subTypeName.indexOf('[')).toLowerCase())+")");
+							fieldTypeDesc.append(DocClassUtil.processTypeNameForParams(subTypeName));
 						} else {
 							String simpleN = DocClassUtil.getSimpleName(globGicName[n]);
 							if (subTypeName.length() == 1 && DocClassUtil.isCollection(simpleN)) {
-								fieldTypeDesc.append(DocClassUtil.lowerFirstCapse(simpleN.substring(simpleN.lastIndexOf(CONNECTOR) + 1)));
+								fieldTypeDesc.append(DocClassUtil.processTypeNameForParams(simpleN));
 								String gicSimpleName = DocClassUtil.getGlobGicSimpleName(globGicName[n]);
-								fieldTypeDesc.append('(').append(DocClassUtil.isPrimitive(gicSimpleName)?DocClassUtil.processTypeNameForParams(gicSimpleName):"obj").append(')'); 
+								fieldTypeDesc.append('(').append(DocClassUtil.processTypeNameForParams(gicSimpleName)).append(')'); 
 							} else {
 								fieldTypeDesc.append("obj");
 							}
 						}
 
-						params.append(fieldName).append('|').append(fieldTypeDesc).append('|');
+						docContent.append(fieldName).append(VERTICAL_SEPARATORS).append(fieldTypeDesc).append(VERTICAL_SEPARATORS);
 						if (StringUtil.isNotEmpty(comment)) {
-							comment = comment.replaceAll("\r|\n", SPACE_KEY);
-							params.append(comment).append('|').append(strRequired).append(LINE_BREAK_KEY);
+							comment = comment.replaceAll("\r|\n", SPACE_STR);
+							docContent.append(comment).append(VERTICAL_SEPARATORS).append(strRequired).append(LINE_BREAK_KEY);
 						} else {
-							params.append("No comments found|").append(strRequired).append(LINE_BREAK_KEY);
+							docContent.append("No comments found|").append(strRequired).append(LINE_BREAK_KEY);
 						}
+						
 						StringBuilder preBuilder = new StringBuilder();
 						for (int j = 0; j < i; j++) {
 							preBuilder.append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
 						}
 						preBuilder.append("&nbsp;&nbsp;&nbsp;&nbsp;");
-						String nextParentFieldName = StringUtil.isNotEmpty(parentFieldName) || "data".equals(fieldName) ? "" : parentFieldName+fieldName+CONNECTOR;
+						
+						String nextParentFieldName = StringUtil.isNotEmpty(parentFieldName) || "data".equals(fieldName) ? EMPTY_STR : parentFieldName+fieldName+CONNECTOR;
 						if (DocClassUtil.isMap(subTypeName)) {
 							String gNameTemp = field.getType().getGenericCanonicalName();
 							if (DocClassUtil.isMap(gNameTemp)) {
-								params.append(preBuilder + "any object|object|any object\n");
+								docContent.append(preBuilder + "any object|object|any object\n");
 							} else {
 								String valType = DocClassUtil.getMapKeyValueType(gNameTemp)[1];
 								if (!DocClassUtil.isPrimitive(valType)) {
 									if (valType.length() == 1) {
-										String gicName = (n < globGicName.length) ? globGicName[n]
-												: globGicName[globGicName.length - 1];
+										String gicName = (n < globGicName.length) ? globGicName[n] : globGicName[globGicName.length - 1];
 										if (!DocClassUtil.isPrimitive(gicName) && !simpleName.equals(gicName)) {
-											buildParams(gicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+											buildParams(gicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 										}
 									} else {
-										buildParams(valType, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+										buildParams(valType, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 									}
 								}
 							}
@@ -632,11 +628,11 @@ public class SourceBuilder {
 										if (len > 0) {
 											String gicName = (n < len) ? globGicName[n] : globGicName[len - 1];
 											if (!DocClassUtil.isPrimitive(gicName) && !simpleName.equals(gicName)) {
-												buildParams(gicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+												buildParams(gicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 											}
 										}
 									} else {
-										buildParams(gName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+										buildParams(gName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 									}
 								}
 							}
@@ -651,35 +647,35 @@ public class SourceBuilder {
 										if (DocClassUtil.isCollection(simple)) {
 											String gName = DocClassUtil.getSimpleGicName(gicName)[0];
 											if (!DocClassUtil.isPrimitive(gName)) {
-												buildParams(gName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+												buildParams(gName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 											}
 										} else if (DocClassUtil.isMap(simple)) {
 											String valType = DocClassUtil.getMapKeyValueType(gicName)[1];
 											if (!DocClassUtil.isPrimitive(valType)) {
-												buildParams(valType, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+												buildParams(valType, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 											}
 										} else {
-											buildParams(gicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+											buildParams(gicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 										}
 									} else {
-										buildParams(gicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+										buildParams(gicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 									}
 								} else {
-									buildParams(subTypeName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+									buildParams(subTypeName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 								}
 							   n++;
 							}
 						} else if (DocClassUtil.isArray(subTypeName)) {
-							fieldGicName = fieldGicName.substring(0, fieldGicName.indexOf('['));
+							fieldGicName = fieldGicName.substring(0, fieldGicName.indexOf(LEFT_BRACKETS));
 							if (className.equals(fieldGicName)) {
 								// do nothing
 							} else if (!DocClassUtil.isPrimitive(fieldGicName)) {
-								buildParams(fieldGicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+								buildParams(fieldGicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 							}
 						} else if (simpleName.equals(subTypeName)) {
 							// do nothing
 						} else {
-							buildParams(fieldGicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, params);
+							buildParams(fieldGicName, preBuilder.toString(), i + 1, requiredFields, nextParentFieldName, docContent);
 						}
 					}
 				}
@@ -689,7 +685,7 @@ public class SourceBuilder {
 
 	private String primitiveReturnRespComment(String typeName) {
 		StringBuilder comments = new StringBuilder();
-		comments.append("no param name|").append(typeName).append('|').append("The interface directly returns the ");
+		comments.append("no param name|").append(typeName).append(VERTICAL_SEPARATORS).append("The interface directly returns the ");
 		comments.append(typeName).append(" type value.\n");
 		return comments.toString();
 	}
@@ -703,80 +699,78 @@ public class SourceBuilder {
 		return JsonFormatUtil.formatJson(buildDataJson(typeName, returnType, true));
 	}
 	
-	private String buildDataJson(String typeName, String genericCanonicalName, boolean isResp) {
+	private StringBuilder buildDataJson(String typeName, String genericCanonicalName, boolean isResp) {
+		StringBuilder jsonBuilder = new StringBuilder();
 		if (DocClassUtil.isMvcIgnoreParams(typeName)) {
 			if (GlobalConstants.MODEL_AND_VIEW_FULLY.equals(typeName)) {
-				return "forward or redirect to a page view.";
+				jsonBuilder.append("forward or redirect to a page view.");
 			} else {
-				return "error restful return.";
+				jsonBuilder.append("error restful return.");
 			}
 		} else if (DocClassUtil.isPrimitive(typeName)) {
-			return DocUtil.jsonValueByType(typeName);
+			jsonBuilder.append(DocUtil.jsonValueByType(typeName));
 		} else {
-			StringBuilder jsonBuilder = new StringBuilder();
 			buildJson(typeName, genericCanonicalName, isResp, jsonBuilder);
-			return jsonBuilder.toString();
 		}
+		return jsonBuilder;
 	}
 	
-	private void buildJson(String typeName, String genericCanonicalName, boolean isResp, StringBuilder jsonBuilder) {
+	private void buildJson(String typeName, String genericCanonicalName, boolean isResp, StringBuilder jsonContent) {
 		JavaClass cls;
 		try {
 			cls = builder.getClassByName(typeName);
 		} catch (Exception e) {
-			jsonBuilder.append(DocUtil.jsonValueByType(typeName));
+			jsonContent.append(DocUtil.jsonValueByType(typeName));
 			return;
 		}
 		String[] globGicName = DocClassUtil.getSimpleGicName(genericCanonicalName);
 		if (DocClassUtil.isCollection(typeName)) {
-			jsonBuilder.append('[');
+			jsonContent.append(LEFT_BRACKETS);
 			if (globGicName.length == 0) {
-				jsonBuilder.append("{\"object\":\"any object\"}");
+				jsonContent.append("{\"object\":\"any object\"}");
 			} else {
 				String gName = globGicName[0];
 				if (DocClassUtil.isPrimitive(gName)) {
-					jsonBuilder.append(DocUtil.jsonValueByType(gName));
+					jsonContent.append(DocUtil.jsonValueByType(gName));
 				} else if (DocClassUtil.isCollection(gName)) {
 					String simple = DocClassUtil.getSimpleName(gName);
-					buildJson(simple, gName, isResp,jsonBuilder);
+					buildJson(simple, gName, isResp,jsonContent);
 				} else {
-					buildJson(gName, gName, isResp, jsonBuilder);
+					buildJson(gName, gName, isResp, jsonContent);
 				}
 			}
-			jsonBuilder.append("]");
+			jsonContent.append(RIGHT_BRACKETS);
 		} else if(DocClassUtil.isArray(typeName)) {
-			jsonBuilder.append('[');
-			String gName = typeName.substring(0, typeName.indexOf('[')).toLowerCase();
+			jsonContent.append(LEFT_BRACKETS);
+			String gName = typeName.substring(0, typeName.indexOf(LEFT_BRACKETS)).toLowerCase();
 			if (DocClassUtil.isPrimitive(gName)) {
-				jsonBuilder.append(DocUtil.jsonValueByType(gName));
+				jsonContent.append(DocUtil.jsonValueByType(gName));
 			} else {
-				buildJson(gName, gName, isResp, jsonBuilder);
+				buildJson(gName, gName, isResp, jsonContent);
 			}
-			jsonBuilder.append("]");
+			jsonContent.append(RIGHT_BRACKETS);
 		} else if (DocClassUtil.isMap(typeName)) {
 			String gNameTemp = genericCanonicalName;
 			String[] getKeyValType = DocClassUtil.getMapKeyValueType(gNameTemp);
-			jsonBuilder.append("{");
-			jsonBuilder.append(MAP_KEY);
-			if (getKeyValType.length == 0) {
-				jsonBuilder.append("{}");
-			} else {
+			jsonContent.append(LEFT_CURLY_BRACKETS);
+			jsonContent.append(MAP_KEY);
+			if (getKeyValType.length != 0) {
 				String gicName = gNameTemp.substring(gNameTemp.indexOf(CONNECTOR) + 1, gNameTemp.lastIndexOf(RIGHT_ANGLE_BRACKETS));
 				if (gicName.length() == 1)  {
 					if (DocClassUtil.isPrimitive(gicName)) {
-						jsonBuilder.append(DocUtil.jsonValueByType(gicName));
+						jsonContent.append(DocUtil.jsonValueByType(gicName));
 					} else if (gicName.contains(LEFT_ANGLE_BRACKETS)) {
 						String simple = DocClassUtil.getSimpleName(gicName);
-						buildJson(simple, gicName, isResp,jsonBuilder);
+						buildJson(simple, gicName, isResp,jsonContent);
 					}
 				} else {
-					buildJson(gicName, gNameTemp, isResp,jsonBuilder);
+					buildJson(gicName, gNameTemp, isResp,jsonContent);
 				}
 			}
-			jsonBuilder.append("}");
+			jsonContent.append(RIGHT_CURLY_BRACKETS);
 		} else {
 			List<JavaField> fields = getFields(cls, 0);
-			jsonBuilder.append("{");
+			jsonContent.append(LEFT_CURLY_BRACKETS);
 			int i = 0;
 			out: 
 			for (JavaField field : fields) {
@@ -808,108 +802,110 @@ public class SourceBuilder {
 						if ("JsonIgnore".equals(annotationName)) {
 							continue out;
 						} else if ("JSONField".equals(annotationName) && null != annotation.getProperty("name")) {
-							fieldName = annotation.getProperty("name").toString().replace("\"", "");
+							fieldName = annotation.getProperty("name").toString().replace(DOUBLE_QUOTATION, EMPTY_STR);
 						}
 					}
 					
 					String typeSimpleName = field.getType().getSimpleName();
 					String subTypeName = field.getType().getFullyQualifiedName();
 					String fieldGicName = field.getType().getGenericCanonicalName();
-					jsonBuilder.append("\"").append(fieldName).append("\":");
+					jsonContent.append(DOUBLE_QUOTATION).append(fieldName).append(DOUBLE_QUOTATION).append(COLON);
 					if (DocClassUtil.isPrimitive(typeSimpleName)) {
-						jsonBuilder.append(DocUtil.getValByTypeAndFieldName(typeSimpleName, field.getName())).append(COMMA);
+						jsonContent.append(DocUtil.getValByTypeAndFieldName(typeSimpleName, field.getName())).append(COMMA);
 					} else if (DocClassUtil.isCollection(subTypeName) || DocClassUtil.isArray(subTypeName)) {
-						fieldGicName = DocClassUtil.isArray(subTypeName) ? fieldGicName.substring(0, fieldGicName.indexOf('[')) : fieldGicName;
+						fieldGicName = DocClassUtil.isArray(subTypeName) ? fieldGicName.substring(0, fieldGicName.indexOf(LEFT_BRACKETS)) : fieldGicName;
 						if (DocClassUtil.getSimpleGicName(fieldGicName).length == 0) {
-							jsonBuilder.append("{\"object\":\"any object\"},");
+							jsonContent.append("{\"object\":\"any object\"},");
 						} else {
 							String gicName = DocClassUtil.getSimpleGicName(fieldGicName)[0];
-							jsonBuilder.append('[');
+							jsonContent.append(LEFT_BRACKETS);
 							if (DocClassUtil.isPrimitive(typeName)) {
-								jsonBuilder.append(DocUtil.jsonValueByType(typeName));
+								jsonContent.append(DocUtil.jsonValueByType(typeName));
 							} else if (DocClassUtil.isCollection(typeName)) {
-								buildJson(gicName, fieldGicName, isResp,jsonBuilder);
+								buildJson(gicName, fieldGicName, isResp,jsonContent);
 							} else if (gicName.length() == 1) {
 								if (globGicName.length == 0) {
-									jsonBuilder.append("{\"object\":\"any object\"}");
+									jsonContent.append("{\"object\":\"any object\"}");
 								} else {
 									String gicName1 = (i < globGicName.length) ? globGicName[i] : globGicName[globGicName.length - 1];
 									if (DocClassUtil.isPrimitive(gicName1)) {
-										jsonBuilder.append(DocUtil.jsonValueByType(gicName1));
+										jsonContent.append(DocUtil.jsonValueByType(gicName1));
 									} else {
 										if (!typeName.equals(gicName1)) {
-											buildJson(DocClassUtil.getSimpleName(gicName1), gicName1, isResp,jsonBuilder);
+											buildJson(DocClassUtil.getSimpleName(gicName1), gicName1, isResp,jsonContent);
 										} else {
-											jsonBuilder.append("{\"$ref\":\"..\"}");
+											jsonContent.append("{\"$ref\":\"..\"}");
 										}
 									}
 								}
 							} else {
 								if (!typeName.equals(gicName) && !gicName.contains(typeName)) {
 									if(DocClassUtil.isPrimitive(gicName)){
-										jsonBuilder.append(DocUtil.jsonValueByType(gicName));
+										jsonContent.append(DocUtil.jsonValueByType(gicName));
 									}else {
-										buildJson(gicName, fieldGicName, isResp,jsonBuilder);
+										buildJson(gicName, fieldGicName, isResp,jsonContent);
 									}
 								} else {
-									jsonBuilder.append("{\"$ref\":\"..\"}");
+									jsonContent.append("{\"$ref\":\"..\"}");
 								}
 							}
-							jsonBuilder.append("],");
+							jsonContent.append("],");
 						}
 					} else if (DocClassUtil.isMap(subTypeName)) {
 						String gicName = fieldGicName.substring(fieldGicName.indexOf(CONNECTOR) + 1, fieldGicName.indexOf(RIGHT_ANGLE_BRACKETS));
-						jsonBuilder.append("{").append(MAP_KEY);
+						jsonContent.append(LEFT_CURLY_BRACKETS).append(MAP_KEY);
 						if (gicName.length() == 1) {
 							String gicName1 = (i < globGicName.length) ? globGicName[i] : globGicName[globGicName.length - 1];
 							if (DocClassUtil.isPrimitive(gicName1)) {
-								jsonBuilder.append(DocUtil.jsonValueByType(gicName1));
+								jsonContent.append(DocUtil.jsonValueByType(gicName1));
 							} else {
 								if (!typeName.equals(gicName1)) {
-									buildJson(DocClassUtil.getSimpleName(gicName1), gicName1, isResp,jsonBuilder);
+									buildJson(DocClassUtil.getSimpleName(gicName1), gicName1, isResp,jsonContent);
 								} else {
-									jsonBuilder.append("{}");
+									jsonContent.append("{}");
 								}
 							}
 						} else {
-							buildJson(gicName, fieldGicName, isResp,jsonBuilder);
+							buildJson(gicName, fieldGicName, isResp,jsonContent);
 						}
-						jsonBuilder.append("},");
+						jsonContent.append(RIGHT_CURLY_BRACKETS);
+						jsonContent.append(COMMA);
 					} else if (subTypeName.length() == 1) {
 						if (!typeName.equals(genericCanonicalName)) {
 							String gicName = globGicName[i];
 							if (gicName.contains(LEFT_ANGLE_BRACKETS)) {
 								String simple = DocClassUtil.getSimpleName(gicName);
-								buildJson(simple, gicName, isResp,jsonBuilder);
+								buildJson(simple, gicName, isResp,jsonContent);
 							} else {
 								if (DocClassUtil.isPrimitive(gicName)) {
-									jsonBuilder.append(DocUtil.jsonValueByType(gicName));
+									jsonContent.append(DocUtil.jsonValueByType(gicName));
 								} else {
-									buildJson(gicName, gicName, isResp,jsonBuilder);
+									buildJson(gicName, gicName, isResp,jsonContent);
 								}
 							}
 						} else {
-							jsonBuilder.append(WARN_DESC);
+							jsonContent.append(WARN_DESC);
 						}
-						jsonBuilder.append(COMMA);
+						jsonContent.append(COMMA);
 						i++;
 					} else if (typeName.equals(subTypeName)) {
-						jsonBuilder.append("{\"$ref\":\"...\"},");
+						jsonContent.append("{\"$ref\":\"...\"},");
 					} else {
-						buildJson(subTypeName, fieldGicName, isResp,jsonBuilder);
-						jsonBuilder.append(COMMA);
+						buildJson(subTypeName, fieldGicName, isResp,jsonContent);
+						jsonContent.append(COMMA);
 					}
 				}
 			}
-			if (jsonBuilder.toString().contains(COMMA)) {
-				jsonBuilder.deleteCharAt(jsonBuilder.lastIndexOf(COMMA));
+			if (jsonContent.indexOf(COMMA) != -1) {
+				jsonContent.deleteCharAt(jsonContent.lastIndexOf(COMMA));
 			}
-			jsonBuilder.append("}");
+			jsonContent.append(RIGHT_CURLY_BRACKETS);
 		}
 	}
 
-	private String buildReqJson(JavaMethod method) {
+	private StringBuilder buildReqJson(JavaMethod method) {
 		List<JavaParameter> parameterList = method.getParameters();
+		StringBuilder sb = new StringBuilder();
 		for (JavaParameter parameter : parameterList) {
 			JavaType javaType = parameter.getType();
 			String simpleTypeName = javaType.getValue();
@@ -918,15 +914,17 @@ public class SourceBuilder {
 			String paraName = parameter.getName();
 			if (!DocClassUtil.isMvcIgnoreParams(typeName)) {
 				if (DocClassUtil.isPrimitive(simpleTypeName)) {
-					StringBuilder sb = new StringBuilder();
-					sb.append("{\"").append(paraName).append("\":").append(DocUtil.jsonValueByType(simpleTypeName)).append("}");
-					return sb.toString();
+					sb.append(LEFT_CURLY_BRACKETS).append(DOUBLE_QUOTATION).append(paraName).append(DOUBLE_QUOTATION).append(COLON).append(DocUtil.jsonValueByType(simpleTypeName)).append(RIGHT_CURLY_BRACKETS);
 				} else {
-					return buildDataJson(typeName, gicTypeName, false);
+					sb.append(buildDataJson(typeName, gicTypeName, false));
 				}
+				break;
 			}
 		}
-		return "No request parameters are required.";
+		if (sb.length() == 0) {
+			sb.append("No request parameters are required.");
+		}
+		return sb;
 	}
 
 	private String isRequired(String fieldStr, List<String> requiredFields, String parentFieldName) {
@@ -937,11 +935,10 @@ public class SourceBuilder {
 				break;
 			}
 		}
-		return isRequired ? "`"+isRequired + "`" : ""+isRequired;
+		return isRequired ? "`"+isRequired + "`" : String.valueOf(isRequired);
 	}
 
-	private String getCommentTag(final JavaMethod javaMethod, final String tagName, final String className,
-			List<String> requiredFields) {
+	private String buildMethodRequest(final JavaMethod javaMethod, final String tagName, final String className, List<String> requiredFields) {
 		List<DocletTag> paramTags = javaMethod.getTagsByName(tagName);
 		Map<String, String> paramTagMap = new HashMap<>();
 		for (DocletTag docletTag : paramTags) {
@@ -957,8 +954,8 @@ public class SourceBuilder {
 				pName = value.substring(0, idx);
 				pValue = value.substring(idx + 1);
 			} else {
-				pName = (value.indexOf(SPACE_KEY) > -1) ? value.substring(0, value.indexOf(SPACE_KEY)) : value;
-				pValue = value.indexOf(SPACE_KEY) > -1 ? value.substring(value.indexOf(' ') + 1) : NO_COMENT_DESC;
+				pName = (value.indexOf(SPACE_STR) > -1) ? value.substring(0, value.indexOf(SPACE_STR)) : value;
+				pValue = value.indexOf(SPACE_STR) > -1 ? value.substring(value.indexOf(' ') + 1) : NO_COMENT_DESC;
 			}
 			paramTagMap.put(pName, pValue);
 		}
@@ -980,23 +977,22 @@ public class SourceBuilder {
 						String[] gicNameArr = DocClassUtil.getSimpleGicName(typeName);
 						String gicName = gicNameArr[0];
 						if (DocClassUtil.isArray(gicName)) {
-							gicName = gicName.substring(0, gicName.indexOf('['));
+							gicName = gicName.substring(0, gicName.indexOf(LEFT_BRACKETS));
 						}
-						String typeTemp = "";
 						if (DocClassUtil.isPrimitive(gicName)) {
-							typeTemp = " of " + DocClassUtil.processTypeNameForParams(gicName);
-							reqParam.append(paramName).append('|').append(DocClassUtil.processTypeNameForParams(gicName)).append(typeTemp).append('|').append(comment).append(TRUE_LINE_BREAK_KEY);
+							String typeTemp = " of " + DocClassUtil.processTypeNameForParams(gicName);
+							reqParam.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicName)).append(typeTemp).append(VERTICAL_SEPARATORS).append(comment).append(TRUE_LINE_BREAK_KEY);
 						} else {
-							reqParam.append(paramName).append('|').append(DocClassUtil.processTypeNameForParams(gicName)).append(typeTemp).append('|').append(comment).append(TRUE_LINE_BREAK_KEY);
-							buildParams(gicNameArr[0], "&nbsp;&nbsp;&nbsp;&nbsp;", 1, requiredFields, "", reqParam);
+							reqParam.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicName)).append(VERTICAL_SEPARATORS).append(comment).append(TRUE_LINE_BREAK_KEY);
+							buildParams(gicNameArr[0], "&nbsp;&nbsp;&nbsp;&nbsp;", 1, requiredFields, EMPTY_STR, reqParam);
 						}
 
 					} else if (DocClassUtil.isPrimitive(fullTypeName)) {
-						reqParam.append(paramName).append('|').append(DocClassUtil.processTypeNameForParams(fullTypeName)).append('|').append(comment).append(TRUE_LINE_BREAK_KEY);
+						reqParam.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(TRUE_LINE_BREAK_KEY);
 					} else if (DocClassUtil.isMap(typeName)) {
-						reqParam.append(paramName).append('|').append("map").append('|').append(comment).append(TRUE_LINE_BREAK_KEY);
+						reqParam.append(paramName).append(VERTICAL_SEPARATORS).append("map").append(VERTICAL_SEPARATORS).append(comment).append(TRUE_LINE_BREAK_KEY);
 					} else {
-						buildParams(typeName, "", 0, requiredFields, "", reqParam);
+						buildParams(typeName, EMPTY_STR, 0, requiredFields, EMPTY_STR, reqParam);
 					}
 				}
 			}

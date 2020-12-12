@@ -2,6 +2,12 @@ package com.chetong.doc.utils;
 
 import java.util.List;
 
+/**
+ * 集合工具类
+ * 
+ * @author luo
+ * @time 2020-12-12 16:12:15
+ */
 public class CollectionUtil {
 	
 	private CollectionUtil() {}

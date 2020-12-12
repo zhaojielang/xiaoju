@@ -3,7 +3,11 @@ package com.chetong.doc.builder;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.beetl.core.Template;
@@ -14,17 +18,19 @@ import com.chetong.doc.model.ApiResultCode;
 import com.chetong.doc.utils.BeetlTemplateUtil;
 
 public class ApiDocBuilder {
-
+	
     public static List<ApiDoc> builderApiDcs(ApiConfig config) throws InterruptedException, ExecutionException {
         if (null == config) {
             throw new NullPointerException("ApiConfig can't be null");
         }
+        ExecutorService threadPool = Executors.newCachedThreadPool();
+    	Map<String, Integer> counterMap = new ConcurrentHashMap<>();
         
-        SourceBuilder sourceBuilder = new SourceBuilder(config);
+        SourceBuilder sourceBuilder = new SourceBuilder(config, threadPool, counterMap);
         List<ApiDoc> apiDocList = new ArrayList<>();
     	List<ApiResultCode> enumDocList = new ArrayList<>();
-        List<Future<?>> futures = sourceBuilder.getApiDocData();
-        for (Future<?> future : futures) {
+        List<Future<Object>> futures = sourceBuilder.getApiDocData();
+        for (Future<Object> future : futures) {
         	Object docObj = future.get();
         	if (docObj instanceof ApiDoc) {
         		apiDocList.add((ApiDoc) docObj);
@@ -32,6 +38,7 @@ public class ApiDocBuilder {
 				enumDocList.add((ApiResultCode) docObj);
 			}
         }
+        threadPool.shutdown();
         
         //重新排序
         apiDocList.sort(Comparator.comparing(ApiDoc::getIndex));
@@ -47,9 +54,9 @@ public class ApiDocBuilder {
         ApiDoc commonReqFieldDoc = buildCommonReqFieldDoc();
         apiDocList.add(0, commonReqFieldDoc);
         //使用说明
-		ApiDoc explainDoc = buildExplainDoc(String.format("Enum：%s Controller：%s Service：%s", SourceBuilder.COUNTER_MAP.get(SourceBuilder.ENUM_COUNT_KEY), SourceBuilder.COUNTER_MAP.get(SourceBuilder.CONTROLLER_COUNT_KEY), SourceBuilder.COUNTER_MAP.get(SourceBuilder.SERVICE_COUNT_KEY)));
+		ApiDoc explainDoc = buildExplainDoc(String.format("Enum：%s Controller：%s Service：%s", counterMap.get(SourceBuilder.ENUM_COUNT_KEY), counterMap.get(SourceBuilder.CONTROLLER_COUNT_KEY), counterMap.get(SourceBuilder.SERVICE_COUNT_KEY)));
         apiDocList.add(0, explainDoc);
-        SourceBuilder.THREAD_POOL.shutdown();
+        counterMap.clear();
         return apiDocList;
     }
 

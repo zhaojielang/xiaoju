@@ -3,6 +3,12 @@ package com.chetong.doc.model;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 文档资源配置
+ * 
+ * @author 罗乔
+ * @time 2020-12-12 16:53:52
+ */
 public class ApiConfig {
 
     /** 应用请求base路径 */

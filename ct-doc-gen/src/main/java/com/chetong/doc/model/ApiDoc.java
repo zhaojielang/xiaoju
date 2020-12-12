@@ -2,6 +2,12 @@ package com.chetong.doc.model;
 
 import java.util.List;
 
+/**
+ * API文档信息Model
+ * 
+ * @author 罗乔
+ * @time 2020-12-12 16:54:30
+ */
 public class ApiDoc {
 	
 	/** 序号*/
