@@ -44,7 +44,7 @@ public class ApiDocBuilder {
         	Object docObj = future.get();
         	if (docObj instanceof ApiDoc) {
         		apiDocList.add((ApiDoc) docObj);
-			} else {
+			} else if (docObj instanceof ApiResultCode) {
 				enumDocList.add((ApiResultCode) docObj);
 			}
         }
