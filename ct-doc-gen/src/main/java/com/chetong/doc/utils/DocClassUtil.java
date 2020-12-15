@@ -257,7 +257,9 @@ public class DocClassUtil {
     
     public static String processTypeNameForParams(String javaTypeName) {
     	String typeName;
-        if (primitiveClassSimpleName.containsKey(javaTypeName)) {
+    	if (StringUtil.isEmpty(javaTypeName)) {
+    		typeName = OBJ_TYPE_NAME;
+		}else if (primitiveClassSimpleName.containsKey(javaTypeName)) {
         	typeName = primitiveClassSimpleName.get(javaTypeName);
         } else if (baseClassSimpleName.containsKey(javaTypeName)) {
         	typeName = baseClassSimpleName.get(javaTypeName);

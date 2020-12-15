@@ -1,6 +1,7 @@
 package com.chetong.doc.builder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +17,17 @@ import com.chetong.doc.model.ApiConfig;
 import com.chetong.doc.model.ApiDoc;
 import com.chetong.doc.model.ApiResultCode;
 import com.chetong.doc.utils.BeetlTemplateUtil;
+import com.chetong.doc.utils.DocClassUtil;
 
 public class ApiDocBuilder {
+	
+	public static void main(String[] args) {
+		String fieldGicName = "java.util.List";
+//		String gicName = fieldGicName.substring(fieldGicName.indexOf("<") + 1, fieldGicName.indexOf(">"));
+//		System.err.println(gicName);
+		String[] globGicName = DocClassUtil.getSimpleGicName(fieldGicName);
+		System.out.println(Arrays.toString(globGicName));
+	}
 	
     public static List<ApiDoc> builderApiDcs(ApiConfig config) throws InterruptedException, ExecutionException {
         if (null == config) {
