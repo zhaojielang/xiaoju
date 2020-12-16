@@ -750,7 +750,7 @@ public class SourceBuilder {
 			jsonContent.append(RIGHT_BRACKETS);
 		} else if(DocClassUtil.isArray(fullyQualifiedName)) {
 			jsonContent.append(LEFT_BRACKETS);
-			String gName = fullyQualifiedName.substring(0, fullyQualifiedName.indexOf(LEFT_BRACKETS)).toLowerCase();
+			String gName = fullyQualifiedName.substring(0, fullyQualifiedName.indexOf(LEFT_BRACKETS));
 			if (DocClassUtil.isPrimitive(gName)) {
 				jsonContent.append(DocUtil.jsonValueByType(gName));
 			} else {

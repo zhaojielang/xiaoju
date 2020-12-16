@@ -1,7 +1,6 @@
 package com.chetong.doc.builder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -17,17 +16,8 @@ import com.chetong.doc.model.ApiConfig;
 import com.chetong.doc.model.ApiDoc;
 import com.chetong.doc.model.ApiResultCode;
 import com.chetong.doc.utils.BeetlTemplateUtil;
-import com.chetong.doc.utils.DocClassUtil;
 
 public class ApiDocBuilder {
-	
-	public static void main(String[] args) {
-		String fieldGicName = "java.util.List";
-//		String gicName = fieldGicName.substring(fieldGicName.indexOf("<") + 1, fieldGicName.indexOf(">"));
-//		System.err.println(gicName);
-		String[] globGicName = DocClassUtil.getSimpleGicName(fieldGicName);
-		System.out.println(Arrays.toString(globGicName));
-	}
 	
     public static List<ApiDoc> builderApiDcs(ApiConfig config) throws InterruptedException, ExecutionException {
         if (null == config) {
@@ -77,20 +67,26 @@ public class ApiDocBuilder {
      * @param outPath
      */
     private static void buildApiDoc(List<ApiDoc> apiDocList) {
+    	String serviceTemplate = "ServiceApiDoc.btl";
+    	String controllerTemplate = "ControllerApiDoc.btl";
+    	String enumTemplate = "EnumCodeList.btl";
+    	String bindList = "list";
+    	String descKey = "desc";
+    	String nameKey = "name";
         for (ApiDoc doc : apiDocList) {
         	Template mapper;
         	if (doc.getServiceApiDocs() != null) {
-        		mapper = BeetlTemplateUtil.getByName("ServiceApiDoc.btl");
-        		mapper.binding("list", doc.getServiceApiDocs());
+        		mapper = BeetlTemplateUtil.getByName(serviceTemplate);
+        		mapper.binding(bindList, doc.getServiceApiDocs());
 			} else if(doc.getControllerApiDocs() != null) {
-				mapper = BeetlTemplateUtil.getByName("ControllerApiDoc.btl");
-				mapper.binding("list", doc.getControllerApiDocs());
+				mapper = BeetlTemplateUtil.getByName(controllerTemplate);
+				mapper.binding(bindList, doc.getControllerApiDocs());
 			} else {
-				mapper = BeetlTemplateUtil.getByName("EnumCodeList.btl");
-				mapper.binding("list", doc.getApiResultCodes());
+				mapper = BeetlTemplateUtil.getByName(enumTemplate);
+				mapper.binding(bindList, doc.getApiResultCodes());
 			}
-            mapper.binding("desc", doc.getDesc());
-            mapper.binding("name", doc.getName());
+            mapper.binding(descKey, doc.getDesc());
+            mapper.binding(nameKey, doc.getName());
             doc.setApiDocContent(mapper.render());
         }
     }
