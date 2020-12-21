@@ -1,9 +1,12 @@
 package com.chetong.doc.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.chetong.doc.constants.GlobalConstants;
 
 public class DocClassUtil {
 	
@@ -12,6 +15,7 @@ public class DocClassUtil {
 	protected static final Map<String,String>  listClassSimpleName = new HashMap<>();
 	protected static final Map<String,String>  mapClassSimpleName = new HashMap<>();
 	protected static final Map<String,String>  jsonClassSimpleName = new HashMap<>();
+	protected static final Map<String,String>  isMvcIgnoreParamsType = new HashMap<>();
 	protected static final String INT_TYPE_NAME = "int";
 	protected static final String LONG_TYPE_NAME = "long";
 	protected static final String FLOAT_TYPE_NAME = "float";
@@ -26,10 +30,13 @@ public class DocClassUtil {
 	protected static final String JSON_OBJ_TYPE_NAME = "jsonObj";
 	protected static final String JSON_ARR_TYPE_NAME = "jsonArr";
 	protected static final String FORMAT_TYPE_NAME = "format";
+	protected static final String FORMAT_TYPE_PACKAGE = "java.text";
 	protected static final String OBJ_TYPE_NAME = "obj";
 	protected static final String COMMA = ",";
 	protected static final String LEFT_ANGLE_BRACKETS = "<";
 	protected static final String RIGHT_ANGLE_BRACKETS = ">";
+	protected static final String LEFT_BRACKETS = "[";
+	protected static final String RIGHT_BRACKETS = "]";
 	protected static final String EMPTY_STR = "";
 	protected static final String SPACE_KEY = " ";
 	
@@ -76,8 +83,6 @@ public class DocClassUtil {
 		baseClassSimpleName.put("java.time.LocalDateTime", DATE_TYPE_NAME);
 		baseClassSimpleName.put("LocalDate", DATE_TYPE_NAME);
 		baseClassSimpleName.put("java.time.LocalDate", DATE_TYPE_NAME);
-		baseClassSimpleName.put("Map", MAP_TYPE_NAME);
-		baseClassSimpleName.put("java.util.Map", MAP_TYPE_NAME);
 		baseClassSimpleName.put("JSONObject", JSON_OBJ_TYPE_NAME);
 		baseClassSimpleName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
 		baseClassSimpleName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
@@ -126,12 +131,19 @@ public class DocClassUtil {
 		jsonClassSimpleName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
 	}
 	
-    /**
-     * get class names by generic class name
-     *
-     * @param returnType generic class name
-     * @return array of string
-     */
+	static {
+		isMvcIgnoreParamsType.put("org.springframework.ui.Model", OBJ_TYPE_NAME);
+		isMvcIgnoreParamsType.put("org.springframework.ui.ModelMap", OBJ_TYPE_NAME);
+		isMvcIgnoreParamsType.put("org.springframework.web.servlet.ModelAndView", OBJ_TYPE_NAME);
+		isMvcIgnoreParamsType.put("org.springframework.validation.BindingResult", OBJ_TYPE_NAME);
+		isMvcIgnoreParamsType.put("javax.servlet.http.HttpServletRequest", OBJ_TYPE_NAME);
+		isMvcIgnoreParamsType.put("javax.servlet.http.HttpServletResponse", OBJ_TYPE_NAME);
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(Arrays.toString(getSimpleGicName("java.lang.Object")));
+	}
+	
     public static String[] getSimpleGicName(String returnType) {
         if (returnType.indexOf(LEFT_ANGLE_BRACKETS) != -1) {
             String pre = returnType.substring(0, returnType.indexOf(LEFT_ANGLE_BRACKETS));
@@ -145,18 +157,12 @@ public class DocClassUtil {
             } else {
 				arr = type.split(COMMA);
 			}
-            return classNameFix(arr);
+            return arr;
         } else {
             return returnType.split(SPACE_KEY);
         }
     }
 
-    /**
-     * Get a simple type name from a generic class name
-     *
-     * @param gicName Generic class name
-     * @return String
-     */
     public static String getSimpleName(String gicName) {
         if (gicName.indexOf(LEFT_ANGLE_BRACKETS) != -1) {
             return gicName.substring(0, gicName.indexOf(LEFT_ANGLE_BRACKETS));
@@ -174,20 +180,14 @@ public class DocClassUtil {
     }
     
     public static String getArraySimpleName(String arrName) {
-    	if (arrName.indexOf('[') != -1) {
-            return arrName.substring(0, arrName.indexOf('['));
+    	if (arrName.indexOf(LEFT_BRACKETS) != -1) {
+            return arrName.substring(0, arrName.indexOf(LEFT_BRACKETS));
         } else {
             return arrName;
         }
     }
     
-    /**
-     * Automatic repair of generic split class names
-     *
-     * @param arr arr of class name
-     * @return array of String
-     */
-    private static String[] classNameFix(String[] arr) {
+    public static String[] classNameFix(String[] arr) {
         List<String> classes = new ArrayList<>();
         List<Integer> indexList = new ArrayList<>();
         int globIndex = 0;
@@ -236,12 +236,6 @@ public class DocClassUtil {
         return classes.toArray(new String[classes.size()]);
     }
 
-    /**
-     * get map key and value type name populate into array.
-     *
-     * @param gName generic class name
-     * @return array of string
-     */
     public static String[] getMapKeyValueType(String gName) {
         if(gName.indexOf(LEFT_ANGLE_BRACKETS) != -1){
             String[] arr = new String[2];
@@ -265,9 +259,9 @@ public class DocClassUtil {
         	typeName = baseClassSimpleName.get(javaTypeName);
         } else if (listClassSimpleName.containsKey(javaTypeName)) {
         	typeName = listClassSimpleName.get(javaTypeName);
-        } else if (javaTypeName.contains("[")) {
+        } else if (javaTypeName.contains(LEFT_BRACKETS)) {
         	typeName = "array("+processTypeNameForParams(getArraySimpleName(javaTypeName))+")";
-        } else if (javaTypeName.startsWith("java.text")) {
+        } else if (javaTypeName.startsWith(FORMAT_TYPE_PACKAGE)) {
         	typeName = FORMAT_TYPE_NAME;
 		} else {
 			typeName = OBJ_TYPE_NAME;
@@ -278,7 +272,7 @@ public class DocClassUtil {
     public static boolean isPrimitive(String type) {
     	return primitiveClassSimpleName.containsKey(type) 
     			|| baseClassSimpleName.containsKey(type)
-    			|| type.startsWith("java.text");
+    			|| type.startsWith(FORMAT_TYPE_PACKAGE);
     }
 
     public static boolean isCollection(String type) {
@@ -317,36 +311,16 @@ public class DocClassUtil {
         }
     }
 
-    /**
-     * custom tag
-     * @param tagName custom field tag
-     * @return boolean
-     */
     public static boolean isRequiredTag(String tagName){
         return "required".equals(tagName);
     }
 
-    /**
-     * ignore tag request field
-     * @param tagName custom field tag
-     * @return boolean
-     */
     public static boolean isIgnoreTag(String tagName){
-        return "ignore".equals(tagName);
+        return GlobalConstants.IGNORE_TAG.equals(tagName);
     }
 
-    /**
-     * ignore param of spring mvc
-     * @param paramType param type name
-     * @return boolean
-     */
     public static boolean isMvcIgnoreParams(String paramType){
-    	return "org.springframework.ui.Model".equals(paramType)
-                || "org.springframework.ui.ModelMap".equals(paramType)
-                || "org.springframework.web.servlet.ModelAndView".equals(paramType)
-                || "org.springframework.validation.BindingResult".equals(paramType)
-                || "javax.servlet.http.HttpServletRequest".equals(paramType)
-                || "javax.servlet.http.HttpServletResponse".equals(paramType);
+    	return isMvcIgnoreParamsType.containsKey(paramType);
     }
     
 	public static String lowerFirstCapse(String str) {
