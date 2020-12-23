@@ -1,9 +1,6 @@
 package com.chetong.doc.utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.chetong.doc.constants.GlobalConstants;
@@ -44,10 +41,10 @@ public class DocClassUtil {
 		primitiveClassSimpleName.put("byte", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("Byte", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("java.lang.Byte", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("int", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("short", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("Short", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("java.lang.Short", INT_TYPE_NAME);
+		primitiveClassSimpleName.put("int", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("Integer", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("java.lang.Integer", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("long", LONG_TYPE_NAME);
@@ -59,13 +56,13 @@ public class DocClassUtil {
 		primitiveClassSimpleName.put(FLOAT_TYPE_NAME, FLOAT_TYPE_NAME);
 		primitiveClassSimpleName.put("Float", FLOAT_TYPE_NAME);
 		primitiveClassSimpleName.put("java.lang.Float", FLOAT_TYPE_NAME);
-		primitiveClassSimpleName.put("java.math.BigDecimal", DOUBLE_TYPE_NAME);
 		primitiveClassSimpleName.put("BigDecimal", DOUBLE_TYPE_NAME);
-		primitiveClassSimpleName.put("java.math.BigInteger", LONG_TYPE_NAME);
+		primitiveClassSimpleName.put("java.math.BigDecimal", DOUBLE_TYPE_NAME);
 		primitiveClassSimpleName.put("BigInteger", LONG_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Boolean", BOOLEAN_TYPE_NAME);
-		primitiveClassSimpleName.put("Boolean", BOOLEAN_TYPE_NAME);
+		primitiveClassSimpleName.put("java.math.BigInteger", LONG_TYPE_NAME);
 		primitiveClassSimpleName.put(BOOLEAN_TYPE_NAME, BOOLEAN_TYPE_NAME);
+		primitiveClassSimpleName.put("Boolean", BOOLEAN_TYPE_NAME);
+		primitiveClassSimpleName.put("java.lang.Boolean", BOOLEAN_TYPE_NAME);
 		primitiveClassSimpleName.put("char", INT_TYPE_NAME);
 		primitiveClassSimpleName.put("Char", CHAR_TYPE_NAME);
 		primitiveClassSimpleName.put("Character", CHAR_TYPE_NAME);
@@ -87,10 +84,10 @@ public class DocClassUtil {
 		baseClassSimpleName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
 		baseClassSimpleName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
 		baseClassSimpleName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
-		baseClassSimpleName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
 		baseClassSimpleName.put("JSONArray", JSON_ARR_TYPE_NAME);
-		baseClassSimpleName.put("java.lang.object", OBJ_TYPE_NAME);
+		baseClassSimpleName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
 		baseClassSimpleName.put("Object", OBJ_TYPE_NAME);
+		baseClassSimpleName.put("java.lang.Object", OBJ_TYPE_NAME);
 	}
 	
 	static {
@@ -140,113 +137,24 @@ public class DocClassUtil {
 		isMvcIgnoreParamsType.put("javax.servlet.http.HttpServletResponse", OBJ_TYPE_NAME);
 	}
 	
-	public static void main(String[] args) {
-		System.out.println(Arrays.toString(getSimpleGicName("java.lang.Object")));
-	}
-	
-    public static String[] getSimpleGicName(String returnType) {
-        if (returnType.indexOf(LEFT_ANGLE_BRACKETS) != -1) {
-            String pre = returnType.substring(0, returnType.indexOf(LEFT_ANGLE_BRACKETS));
-            if (DocClassUtil.isMap(pre)) {
-                return getMapKeyValueType(returnType);
-            }
-            String[] arr;
-            String type = returnType.substring(returnType.indexOf(LEFT_ANGLE_BRACKETS) + 1, returnType.lastIndexOf(RIGHT_ANGLE_BRACKETS));
-            if (isCollection(getSimpleName(type)) || isMap(getSimpleName(type))) {
-                return new String[] {type};
-            } else {
-				arr = type.split(COMMA);
-			}
-            return arr;
-        } else {
-            return returnType.split(SPACE_KEY);
-        }
+    public static String[] getGicName(String gicName) {
+    	if (gicName.contains(LEFT_ANGLE_BRACKETS)) {
+    		return gicName.replaceAll(SPACE_KEY, EMPTY_STR).substring(gicName.indexOf(LEFT_ANGLE_BRACKETS)+1, gicName.length()-1).split(COMMA);
+    	} else {
+    		return new String[] {};
+    	}
     }
 
     public static String getSimpleName(String gicName) {
-        if (gicName.indexOf(LEFT_ANGLE_BRACKETS) != -1) {
+        if (gicName.contains(LEFT_ANGLE_BRACKETS)) {
             return gicName.substring(0, gicName.indexOf(LEFT_ANGLE_BRACKETS));
         } else {
             return gicName;
         }
     }
     
-    public static String getGlobGicSimpleName(String gicName) {
-        if (gicName.indexOf(LEFT_ANGLE_BRACKETS) != -1) {
-            return gicName.substring(gicName.indexOf(LEFT_ANGLE_BRACKETS)+1, gicName.length()-1);
-        } else {
-            return gicName;
-        }
-    }
-    
     public static String getArraySimpleName(String arrName) {
-    	if (arrName.indexOf(LEFT_BRACKETS) != -1) {
-            return arrName.substring(0, arrName.indexOf(LEFT_BRACKETS));
-        } else {
-            return arrName;
-        }
-    }
-    
-    public static String[] classNameFix(String[] arr) {
-        List<String> classes = new ArrayList<>();
-        List<Integer> indexList = new ArrayList<>();
-        int globIndex = 0;
-        for (int i = 0; i < arr.length; i++) {
-        	arr[i] = arr[i].replaceAll(SPACE_KEY, EMPTY_STR);
-            if (!classes.isEmpty()) {
-                int index = classes.size() - 1;
-                if (!DocUtil.isClassName(classes.get(index))) {
-                    globIndex = globIndex + 1;
-                    if (globIndex < arr.length) {
-                        indexList.add(globIndex);
-                        String className = classes.get(index) + COMMA + arr[globIndex];
-                        classes.set(index, className);
-                    }
-
-                } else {
-                    globIndex = globIndex + 1;
-                    if (globIndex < arr.length) {
-                        if (DocUtil.isClassName(arr[globIndex])) {
-                            indexList.add(globIndex);
-                            classes.add(arr[globIndex]);
-                        } else {
-                            if (!indexList.contains(globIndex) && !indexList.contains(globIndex + 1)) {
-                                indexList.add(globIndex);
-                                classes.add(arr[globIndex] + COMMA + arr[globIndex + 1]);
-                                globIndex = globIndex + 1;
-                                indexList.add(globIndex);
-                            }
-                        }
-                    }
-                }
-            } else {
-                if (DocUtil.isClassName(arr[i])) {
-                    indexList.add(i);
-                    classes.add(arr[i]);
-                } else {
-                    if (!indexList.contains(i) && !indexList.contains(i + 1)) {
-                        globIndex = i + 1;
-                        classes.add(arr[i] + COMMA + arr[globIndex]);
-                        indexList.add(i);
-                        indexList.add(i + 1);
-                    }
-                }
-            }
-        }
-        return classes.toArray(new String[classes.size()]);
-    }
-
-    public static String[] getMapKeyValueType(String gName) {
-        if(gName.indexOf(LEFT_ANGLE_BRACKETS) != -1){
-            String[] arr = new String[2];
-            String key = gName.substring(gName.indexOf(LEFT_ANGLE_BRACKETS) + 1, gName.indexOf(COMMA)).replaceAll(SPACE_KEY, EMPTY_STR);
-            String value = gName.substring(gName.indexOf(COMMA) + 1, gName.lastIndexOf(RIGHT_ANGLE_BRACKETS)).replaceAll(SPACE_KEY, EMPTY_STR);
-            arr[0] = key;
-            arr[1] = value;
-            return arr;
-        }else {
-            return new String[0];
-        }
+    	return arrName.substring(0, arrName.indexOf(LEFT_BRACKETS));
     }
     
     public static String processTypeNameForParams(String javaTypeName) {
@@ -275,6 +183,10 @@ public class DocClassUtil {
     			|| type.startsWith(FORMAT_TYPE_PACKAGE);
     }
 
+    public static boolean isGeneric(String type) {
+    	return type.contains(LEFT_ANGLE_BRACKETS);
+    }
+    
     public static boolean isCollection(String type) {
         return listClassSimpleName.containsKey(type);
     }

@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public class DocUtil {
 	
+	private static final String DOUBLE_QUOTATION  = "\"";
+	
     private static String personName = new String[] {"汤姆","杰瑞","张三","李四","王五","赵六"}[(int)NumberUtil.getRandomByBetween(0,5)];
     private static String url = "http://www.chetong.net";
     private static String email = "zhangsan@chetong.net";
@@ -113,7 +115,7 @@ public class DocUtil {
 		randomFieldValue.put("com.alibaba.fastjson.JSONArray", array);
 		randomFieldValue.put("net.sf.json.JSONArray", array);
 		randomFieldValue.put("JSONArray", array);
-		randomFieldValue.put("java.lang.object", jsonAndMap);
+		randomFieldValue.put("java.lang.Object", jsonAndMap);
 		randomFieldValue.put("Object", jsonAndMap);
 	}
     
@@ -129,9 +131,12 @@ public class DocUtil {
         if(DocClassUtil.primitiveClassSimpleName.containsKey(type)){
             return value;
         }else{
+        	if (value == null) {
+        		value = RandomUtil.createAllRandomCode(4);
+        	}
             StringBuilder builder = new StringBuilder();
-            builder.append("\"").append(value).append("\"");
-            return builder.toString();
+            builder.append(DOUBLE_QUOTATION).append(value).append(DOUBLE_QUOTATION);
+            return DOUBLE_QUOTATION+value+DOUBLE_QUOTATION;
         }
     }
 
@@ -157,7 +162,9 @@ public class DocUtil {
             if(DocClassUtil.primitiveClassSimpleName.containsKey(type)){
             	return value;
             }else{
-            	return "\""+value+"\"";
+            	StringBuilder builder = new StringBuilder();
+                builder.append(DOUBLE_QUOTATION).append(value).append(DOUBLE_QUOTATION);
+                return DOUBLE_QUOTATION+value+DOUBLE_QUOTATION;
             }
         }
     }
