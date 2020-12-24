@@ -21,7 +21,6 @@
 		    <artifactId>beetl</artifactId>
 		    <version>3.3.0.RELEASE</version>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.thoughtworks.qdox</groupId>
 			<artifactId>qdox</artifactId>

@@ -2,6 +2,7 @@ package com.chetong.doc.utils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -27,11 +28,11 @@ public class DocUtil {
     private static String gender = String.valueOf(NumberUtil.getRandomByBetween(0,1));
     private static String codeFlag = String.valueOf(NumberUtil.getRandomByBetween(0,100));
     private static String messageFlag = new String[] {"success","fail"}[(int)NumberUtil.getRandomByBetween(0,1)];
-    private static String jsonAndMap = "{}";
+    private static String jsonAndObj = "{}";
     private static String array = "[]";
     
     private static final Map<String,String> mateFieldValue = new LinkedHashMap<>();
-    private static final Map<String,String> randomFieldValue = new LinkedHashMap<>();
+    private static final Map<String,String> randomFieldValue = new HashMap<>();
     static {
     	mateFieldValue.put("resultcode","0000");
     	mateFieldValue.put("resultmsg","成功");
@@ -68,55 +69,37 @@ public class DocUtil {
     }
     
     static {
+    	randomFieldValue.put("int", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
 		randomFieldValue.put("java.lang.Integer", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("Integer", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("int", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("java.lang.Long", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("Long", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
 		randomFieldValue.put("long", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("java.lang.Double", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
-		randomFieldValue.put("Double", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
+		randomFieldValue.put("java.lang.Long", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
 		randomFieldValue.put("double", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
-		randomFieldValue.put("java.lang.Float", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
-		randomFieldValue.put("Float", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
+		randomFieldValue.put("java.lang.Double", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
 		randomFieldValue.put("float", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
-		randomFieldValue.put("java.lang.Short", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("Short", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
+		randomFieldValue.put("java.lang.Float", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
 		randomFieldValue.put("short", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
+		randomFieldValue.put("java.lang.Short", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
 		randomFieldValue.put("java.math.BigDecimal", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
-		randomFieldValue.put("BigDecimal", NumberUtil.DECIMAL_FORMAT.format(NumberUtil.getDoubleRandomByLength(6)));
 		randomFieldValue.put("java.math.BigInteger", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("BigInteger", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
 		randomFieldValue.put("java.lang.Boolean", String.valueOf(NumberUtil.getRandomByLength(1)==1));
-		randomFieldValue.put("Boolean", String.valueOf(NumberUtil.getRandomByLength(1)==1));
 		randomFieldValue.put("boolean", String.valueOf(NumberUtil.getRandomByLength(1)==1));
-		randomFieldValue.put("java.lang.Byte", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("Byte", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
 		randomFieldValue.put("byte", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
-		randomFieldValue.put("java.lang.Character", RandomUtil.createAllRandomCode(4));
-		randomFieldValue.put("Character", RandomUtil.createAllRandomCode(4));
-		randomFieldValue.put("Char", RandomUtil.createAllRandomCode(4));
+		randomFieldValue.put("java.lang.Byte", String.valueOf(NumberUtil.getRandomByBetween(0,1000)));
 		randomFieldValue.put("char", RandomUtil.createAllRandomCode(4));
+		randomFieldValue.put("java.lang.Character", RandomUtil.createAllRandomCode(4));
 		randomFieldValue.put("java.lang.String", RandomUtil.createAllRandomCode(4));
-		randomFieldValue.put("String", RandomUtil.createAllRandomCode(4));
 		randomFieldValue.put("java.util.Date", dataTime);
-		randomFieldValue.put("Date", dataTime);
 		randomFieldValue.put("java.sql.Timestamp", dataTime);
-		randomFieldValue.put("Timestamp", dataTime);
-		randomFieldValue.put("java.time.LocalDateTime", dataTime);
-		randomFieldValue.put("LocalDateTime", dataTime);
 		randomFieldValue.put("java.time.LocalDate", dataTime);
-		randomFieldValue.put("LocalDate", dataTime);
-		randomFieldValue.put("java.util.Map", jsonAndMap);
-		randomFieldValue.put("Map", jsonAndMap);
-		randomFieldValue.put("com.alibaba.fastjson.JSONObject", jsonAndMap);
-		randomFieldValue.put("net.sf.json.JSONObject", jsonAndMap);
-		randomFieldValue.put("JSONObject", jsonAndMap);
-		randomFieldValue.put("com.alibaba.fastjson.JSONArray", array);
+		randomFieldValue.put("java.time.LocalDateTime", dataTime);
+		randomFieldValue.put("java.util.Map", jsonAndObj);
+		randomFieldValue.put("net.sf.json.JSONObject", jsonAndObj);
 		randomFieldValue.put("net.sf.json.JSONArray", array);
-		randomFieldValue.put("JSONArray", array);
-		randomFieldValue.put("java.lang.Object", jsonAndMap);
-		randomFieldValue.put("Object", jsonAndMap);
+		randomFieldValue.put("com.google.gson.JsonObject", jsonAndObj);
+		randomFieldValue.put("com.google.gson.JsonArray", array);
+		randomFieldValue.put("com.alibaba.fastjson.JSONObject", jsonAndObj);
+		randomFieldValue.put("com.alibaba.fastjson.JSONArray", array);
+		randomFieldValue.put("java.lang.Object", jsonAndObj);
 	}
     
     private static final Set<Entry<String, String>> mateFieldValueSets = mateFieldValue.entrySet();
@@ -128,15 +111,16 @@ public class DocUtil {
      */
     public static String jsonValueByType(String type){
         String value = randomFieldValue.get(type);
+        if (value == null) {
+        	value = RandomUtil.createAllRandomCode(4);
+		} 
+        
         if(DocClassUtil.primitiveClassSimpleName.containsKey(type)){
             return value;
         }else{
-        	if (value == null) {
-        		value = RandomUtil.createAllRandomCode(4);
-        	}
             StringBuilder builder = new StringBuilder();
             builder.append(DOUBLE_QUOTATION).append(value).append(DOUBLE_QUOTATION);
-            return DOUBLE_QUOTATION+value+DOUBLE_QUOTATION;
+            return builder.toString();
         }
     }
 
