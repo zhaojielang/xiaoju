@@ -20,9 +20,6 @@ public class ApiConfig {
     /** 请求头 */
     private List<ApiReqHeader> requestHeaders;
 
-    /** controller包过滤 */
-    private String packageFilters;
-
     public String getBasePathUrl() {
 		return basePathUrl;
 	}
@@ -53,13 +50,5 @@ public class ApiConfig {
 
     public void setSourcePaths(SourcePath... sourcePaths) {
         this.sourcePaths = Arrays.asList(sourcePaths);
-    }
-
-    public String getPackageFilters() {
-        return packageFilters;
-    }
-
-    public void setPackageFilters(String packageFilters) {
-        this.packageFilters = packageFilters;
     }
 }

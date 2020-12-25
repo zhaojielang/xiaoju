@@ -7,12 +7,14 @@ import com.chetong.doc.constants.GlobalConstants;
 
 public class DocClassUtil {
 	
-	public static final Map<String, String> primitiveClassSimpleName = new HashMap<>();
-	public static final Map<String, String> baseClassSimpleName = new HashMap<>();
-	public static final Map<String,String>  listClassSimpleName = new HashMap<>();
-	public static final Map<String,String>  mapClassSimpleName = new HashMap<>();
-	public static final Map<String,String>  jsonClassSimpleName = new HashMap<>();
-	public static final Map<String,String>  isMvcIgnoreParamsType = new HashMap<>();
+	private DocClassUtil() {}
+	
+	public static final Map<String, String> PRIMITIVE_CLASS_NAME = new HashMap<>();
+	public static final Map<String, String> BASE_CLASS_NAME = new HashMap<>();
+	public static final Map<String,String>  listClassName = new HashMap<>();
+	public static final Map<String,String>  mapClassName = new HashMap<>();
+	public static final Map<String,String>  jsonClassName = new HashMap<>();
+	public static final Map<String,String>  isMvcIgnoreType = new HashMap<>();
 	protected static final String INT_TYPE_NAME = "int";
 	protected static final String LONG_TYPE_NAME = "long";
 	protected static final String FLOAT_TYPE_NAME = "float";
@@ -38,85 +40,84 @@ public class DocClassUtil {
 	protected static final String SPACE_KEY = " ";
 	
 	static {
-		primitiveClassSimpleName.put("byte", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Byte", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("short", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Short", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("int", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Integer", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("long", LONG_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Long", LONG_TYPE_NAME);
-		primitiveClassSimpleName.put(DOUBLE_TYPE_NAME, DOUBLE_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Double", DOUBLE_TYPE_NAME);
-		primitiveClassSimpleName.put(FLOAT_TYPE_NAME, FLOAT_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Float", FLOAT_TYPE_NAME);
-		primitiveClassSimpleName.put("java.math.BigDecimal", DOUBLE_TYPE_NAME);
-		primitiveClassSimpleName.put("java.math.BigInteger", LONG_TYPE_NAME);
-		primitiveClassSimpleName.put(BOOLEAN_TYPE_NAME, BOOLEAN_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Boolean", BOOLEAN_TYPE_NAME);
-		primitiveClassSimpleName.put("char", INT_TYPE_NAME);
-		primitiveClassSimpleName.put("java.lang.Character", CHAR_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("byte", INT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.lang.Byte", INT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("short", INT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.lang.Short", INT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("int", INT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.lang.Integer", INT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("long", LONG_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.lang.Long", LONG_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put(DOUBLE_TYPE_NAME, DOUBLE_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.lang.Double", DOUBLE_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put(FLOAT_TYPE_NAME, FLOAT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.lang.Float", FLOAT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.math.BigDecimal", DOUBLE_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.math.BigInteger", LONG_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put(BOOLEAN_TYPE_NAME, BOOLEAN_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.lang.Boolean", BOOLEAN_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("char", INT_TYPE_NAME);
+		PRIMITIVE_CLASS_NAME.put("java.lang.Character", CHAR_TYPE_NAME);
 	}
 	
 	static {
-		baseClassSimpleName.put("void", "null");
-		baseClassSimpleName.put("java.lang.String", STRING_TYPE_NAME);
-		baseClassSimpleName.put("java.util.Date", DATE_TYPE_NAME);
-		baseClassSimpleName.put("java.sql.Timestamp", DATE_TYPE_NAME);
-		baseClassSimpleName.put("java.time.LocalDateTime", DATE_TYPE_NAME);
-		baseClassSimpleName.put("java.time.LocalDate", DATE_TYPE_NAME);
-		baseClassSimpleName.put("java.util.Locale", DATE_TYPE_NAME);
-		baseClassSimpleName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
-		baseClassSimpleName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
-		baseClassSimpleName.put("com.google.gson.JsonObject", JSON_ARR_TYPE_NAME);
-		baseClassSimpleName.put("com.google.gson.JsonArray", JSON_ARR_TYPE_NAME);
-		baseClassSimpleName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
-		baseClassSimpleName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
-		baseClassSimpleName.put("java.lang.Object", OBJ_TYPE_NAME);
+		BASE_CLASS_NAME.put("java.lang.String", STRING_TYPE_NAME);
+		BASE_CLASS_NAME.put("java.util.Date", DATE_TYPE_NAME);
+		BASE_CLASS_NAME.put("java.sql.Timestamp", DATE_TYPE_NAME);
+		BASE_CLASS_NAME.put("java.time.LocalDateTime", DATE_TYPE_NAME);
+		BASE_CLASS_NAME.put("java.time.LocalDate", DATE_TYPE_NAME);
+		BASE_CLASS_NAME.put("java.util.Locale", DATE_TYPE_NAME);
+		BASE_CLASS_NAME.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
+		BASE_CLASS_NAME.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
+		BASE_CLASS_NAME.put("com.google.gson.JsonObject", JSON_ARR_TYPE_NAME);
+		BASE_CLASS_NAME.put("com.google.gson.JsonArray", JSON_ARR_TYPE_NAME);
+		BASE_CLASS_NAME.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
+		BASE_CLASS_NAME.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
+		BASE_CLASS_NAME.put("java.lang.Object", OBJ_TYPE_NAME);
 	}
 	
 	static {
-		listClassSimpleName.put("java.util.List", LIST_TYPE_NAME);
-		listClassSimpleName.put("java.util.LinkedList", LIST_TYPE_NAME);
-		listClassSimpleName.put("java.util.ArrayList", LIST_TYPE_NAME);
-		listClassSimpleName.put("java.util.Set", LIST_TYPE_NAME);
-		listClassSimpleName.put("java.util.TreeSet", LIST_TYPE_NAME);
-		listClassSimpleName.put("java.util.HasHset", LIST_TYPE_NAME);
-		listClassSimpleName.put("java.util.SortedSet", LIST_TYPE_NAME);
-		listClassSimpleName.put("java.util.Collection", LIST_TYPE_NAME);
-		listClassSimpleName.put("java.util.ArrayDeque", LIST_TYPE_NAME);
-		listClassSimpleName.put("com.chetong.aic.page.domain.PageList", PAGE_LIST_TYPE_NAME);
-		listClassSimpleName.put("com.baobei.health.page.domain.PageList", PAGE_LIST_TYPE_NAME);
+		listClassName.put("java.util.List", LIST_TYPE_NAME);
+		listClassName.put("java.util.LinkedList", LIST_TYPE_NAME);
+		listClassName.put("java.util.ArrayList", LIST_TYPE_NAME);
+		listClassName.put("java.util.Set", LIST_TYPE_NAME);
+		listClassName.put("java.util.TreeSet", LIST_TYPE_NAME);
+		listClassName.put("java.util.HasHset", LIST_TYPE_NAME);
+		listClassName.put("java.util.SortedSet", LIST_TYPE_NAME);
+		listClassName.put("java.util.Collection", LIST_TYPE_NAME);
+		listClassName.put("java.util.ArrayDeque", LIST_TYPE_NAME);
+		listClassName.put("com.chetong.aic.page.domain.PageList", PAGE_LIST_TYPE_NAME);
+		listClassName.put("com.baobei.health.page.domain.PageList", PAGE_LIST_TYPE_NAME);
 	}
 	
 	static {
-		mapClassSimpleName.put("java.util.Map", MAP_TYPE_NAME);
-		mapClassSimpleName.put("java.util.SortedMap", MAP_TYPE_NAME);
-		mapClassSimpleName.put("java.util.TreeMap", MAP_TYPE_NAME);
-		mapClassSimpleName.put("java.util.LinkedHashMap", MAP_TYPE_NAME);
-		mapClassSimpleName.put("java.util.HashMap", MAP_TYPE_NAME);
-		mapClassSimpleName.put("java.util.HashSet", MAP_TYPE_NAME);
-		mapClassSimpleName.put("java.util.concurrent.ConcurrentHashMap", MAP_TYPE_NAME);
-		mapClassSimpleName.put("java.util.Properties", MAP_TYPE_NAME);
-		mapClassSimpleName.put("java.util.HashTable", MAP_TYPE_NAME);
+		mapClassName.put("java.util.Map", MAP_TYPE_NAME);
+		mapClassName.put("java.util.SortedMap", MAP_TYPE_NAME);
+		mapClassName.put("java.util.TreeMap", MAP_TYPE_NAME);
+		mapClassName.put("java.util.LinkedHashMap", MAP_TYPE_NAME);
+		mapClassName.put("java.util.HashMap", MAP_TYPE_NAME);
+		mapClassName.put("java.util.HashSet", MAP_TYPE_NAME);
+		mapClassName.put("java.util.concurrent.ConcurrentHashMap", MAP_TYPE_NAME);
+		mapClassName.put("java.util.Properties", MAP_TYPE_NAME);
+		mapClassName.put("java.util.HashTable", MAP_TYPE_NAME);
 	}
 	
 	static {
-		jsonClassSimpleName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
-		jsonClassSimpleName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
-		jsonClassSimpleName.put("com.google.gson.JsonObject", JSON_ARR_TYPE_NAME);
-		jsonClassSimpleName.put("com.google.gson.JsonArray", JSON_ARR_TYPE_NAME);
-		jsonClassSimpleName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
-		jsonClassSimpleName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
+		jsonClassName.put("net.sf.json.JSONObject", JSON_OBJ_TYPE_NAME);
+		jsonClassName.put("net.sf.json.JSONArray", JSON_ARR_TYPE_NAME);
+		jsonClassName.put("com.google.gson.JsonObject", JSON_ARR_TYPE_NAME);
+		jsonClassName.put("com.google.gson.JsonArray", JSON_ARR_TYPE_NAME);
+		jsonClassName.put("com.alibaba.fastjson.JSONObject", JSON_OBJ_TYPE_NAME);
+		jsonClassName.put("com.alibaba.fastjson.JSONArray", JSON_ARR_TYPE_NAME);
 	}
 	
 	static {
-		isMvcIgnoreParamsType.put("org.springframework.ui.Model", OBJ_TYPE_NAME);
-		isMvcIgnoreParamsType.put("org.springframework.ui.ModelMap", OBJ_TYPE_NAME);
-		isMvcIgnoreParamsType.put("org.springframework.web.servlet.ModelAndView", OBJ_TYPE_NAME);
-		isMvcIgnoreParamsType.put("org.springframework.validation.BindingResult", OBJ_TYPE_NAME);
-		isMvcIgnoreParamsType.put("javax.servlet.http.HttpServletRequest", OBJ_TYPE_NAME);
-		isMvcIgnoreParamsType.put("javax.servlet.http.HttpServletResponse", OBJ_TYPE_NAME);
+		isMvcIgnoreType.put("org.springframework.ui.Model", OBJ_TYPE_NAME);
+		isMvcIgnoreType.put("org.springframework.ui.ModelMap", OBJ_TYPE_NAME);
+		isMvcIgnoreType.put("org.springframework.web.servlet.ModelAndView", OBJ_TYPE_NAME);
+		isMvcIgnoreType.put("org.springframework.validation.BindingResult", OBJ_TYPE_NAME);
+		isMvcIgnoreType.put("javax.servlet.http.HttpServletRequest", OBJ_TYPE_NAME);
+		isMvcIgnoreType.put("javax.servlet.http.HttpServletResponse", OBJ_TYPE_NAME);
 	}
 	
     public static String[] getGicName(String gicName) {
@@ -143,12 +144,12 @@ public class DocClassUtil {
     	String typeName;
     	if (StringUtil.isEmpty(javaTypeName)) {
     		typeName = OBJ_TYPE_NAME;
-		}else if (primitiveClassSimpleName.containsKey(javaTypeName)) {
-        	typeName = primitiveClassSimpleName.get(javaTypeName);
-        } else if (baseClassSimpleName.containsKey(javaTypeName)) {
-        	typeName = baseClassSimpleName.get(javaTypeName);
-        } else if (listClassSimpleName.containsKey(javaTypeName)) {
-        	typeName = listClassSimpleName.get(javaTypeName);
+		}else if (PRIMITIVE_CLASS_NAME.containsKey(javaTypeName)) {
+        	typeName = PRIMITIVE_CLASS_NAME.get(javaTypeName);
+        } else if (BASE_CLASS_NAME.containsKey(javaTypeName)) {
+        	typeName = BASE_CLASS_NAME.get(javaTypeName);
+        } else if (listClassName.containsKey(javaTypeName)) {
+        	typeName = listClassName.get(javaTypeName);
         } else if (javaTypeName.contains(LEFT_BRACKETS)) {
         	typeName = "array("+processTypeNameForParams(getArraySimpleName(javaTypeName))+")";
         } else if (javaTypeName.startsWith(FORMAT_TYPE_PACKAGE)) {
@@ -160,8 +161,8 @@ public class DocClassUtil {
     }
 
     public static boolean isPrimitive(String type) {
-    	return primitiveClassSimpleName.containsKey(type) 
-    			|| baseClassSimpleName.containsKey(type)
+    	return PRIMITIVE_CLASS_NAME.containsKey(type) 
+    			|| BASE_CLASS_NAME.containsKey(type)
     			|| type.startsWith(FORMAT_TYPE_PACKAGE);
     }
 
@@ -170,15 +171,15 @@ public class DocClassUtil {
     }
     
     public static boolean isCollection(String type) {
-        return listClassSimpleName.containsKey(type);
+        return listClassName.containsKey(type);
     }
 
     public static boolean isMap(String type) {
-        return mapClassSimpleName.containsKey(type);
+        return mapClassName.containsKey(type);
     }
     
     public static boolean isJson(String type) {
-    	return jsonClassSimpleName.containsKey(type);
+    	return jsonClassName.containsKey(type);
     }
 
     public static boolean isArray(String type){
@@ -214,7 +215,7 @@ public class DocClassUtil {
     }
 
     public static boolean isMvcIgnoreParams(String paramType){
-    	return isMvcIgnoreParamsType.containsKey(paramType);
+    	return isMvcIgnoreType.containsKey(paramType);
     }
     
 	public static String lowerFirstCapse(String str) {

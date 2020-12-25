@@ -54,7 +54,7 @@ public class ApiDocBuilder {
         ApiDoc commonReqFieldDoc = buildCommonReqFieldDoc();
         apiDocList.add(0, commonReqFieldDoc);
         //使用说明
-		ApiDoc explainDoc = buildExplainDoc(String.format("Enum：%s Controller：%s Service：%s", counterMap.get(SourceBuilder.ENUM_COUNT_KEY), counterMap.get(SourceBuilder.CONTROLLER_COUNT_KEY), counterMap.get(SourceBuilder.SERVICE_COUNT_KEY)));
+		ApiDoc explainDoc = buildExplainDoc(String.format("Controller：%s Service：%s Enum：%s ", counterMap.get(SourceBuilder.CONTROLLER_COUNT_KEY), counterMap.get(SourceBuilder.SERVICE_COUNT_KEY), counterMap.get(SourceBuilder.ENUM_COUNT_KEY)));
         apiDocList.add(0, explainDoc);
         counterMap.clear();
         return apiDocList;

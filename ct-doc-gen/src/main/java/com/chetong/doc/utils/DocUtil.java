@@ -115,7 +115,7 @@ public class DocUtil {
         	value = RandomUtil.createAllRandomCode(4);
 		} 
         
-        if(DocClassUtil.primitiveClassSimpleName.containsKey(type)){
+        if(DocClassUtil.PRIMITIVE_CLASS_NAME.containsKey(type)){
             return value;
         }else{
             StringBuilder builder = new StringBuilder();
@@ -143,7 +143,7 @@ public class DocUtil {
         if(null == value){
             return jsonValueByType(type);
         }else{
-            if(DocClassUtil.primitiveClassSimpleName.containsKey(type)){
+            if(DocClassUtil.PRIMITIVE_CLASS_NAME.containsKey(type)){
             	return value;
             }else{
             	StringBuilder builder = new StringBuilder();
