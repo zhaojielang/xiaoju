@@ -197,7 +197,7 @@ public class SourceBuilder {
 				futures.add(future);
 			}else if (checkEnum(cls)) {
 				List<JavaField> fields = cls.getFields();
-				if (!fields.isEmpty()) {
+				if (CollectionUtil.isNotEmpty(fields)) {
 					List<Expression> enumConstantArguments = fields.get(0).getEnumConstantArguments();
 					if (enumConstantArguments !=null && enumConstantArguments.size()>=2) {
 						final int index = enumIndex;
@@ -210,9 +210,9 @@ public class SourceBuilder {
 								resultCode.setDesc(3+CONNECTOR+index+SPACE_STR+clsComment);
 								StringBuilder codeDesc = new StringBuilder();
 								for (JavaField javaField : fields) {
-									if (!javaField.getModifiers().toString().contains(MODIFIER_PRIVATE)
-											&& javaField.getEnumConstantArguments() != null) {
-										List<Expression> arguments = javaField.getEnumConstantArguments();
+									List<Expression> arguments = javaField.getEnumConstantArguments();
+									if (!javaField.getModifiers().contains(MODIFIER_PRIVATE)
+											&& CollectionUtil.isNotEmpty(arguments)) {
 										codeDesc.append(arguments.get(0));
 										codeDesc.append(VERTICAL_SEPARATORS);
 										codeDesc.append(arguments.get(1));
