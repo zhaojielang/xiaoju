@@ -461,7 +461,7 @@ public class SourceBuilder {
 		if (parameterList.isEmpty()) {
 			return "";
 		}
-		StringBuilder reqParam = new StringBuilder();
+		StringBuilder docContent = new StringBuilder();
 		for (JavaParameter parameter : parameterList) {
 			String paramName = parameter.getName();
 			JavaType javaType = parameter.getType();
@@ -474,33 +474,33 @@ public class SourceBuilder {
 				}
 				
 				if (DocClassUtil.isPrimitive(fullTypeName)) {
-					reqParam.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+					docContent.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 				} else if (DocClassUtil.isCollection(fullTypeName)) {
 					String[] gicNames = DocClassUtil.getGicName(globGicName);
 					String gicName = gicNames[0];
-					reqParam.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)+LEFT_PARENTHESES+DocClassUtil.getSimpleName(gicName)+RIGHT_PARENTHESES).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+					docContent.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)+LEFT_PARENTHESES+DocClassUtil.getSimpleName(gicName)+RIGHT_PARENTHESES).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 					if (!DocClassUtil.isPrimitive(gicName)) {
-						buildParams(gicName, 1, requiredFields, EMPTY_STR, reqParam);
+						buildParams(gicName, 1, requiredFields, EMPTY_STR, docContent);
 					}
 				} else if(DocClassUtil.isArray(fullTypeName)) {
-					reqParam.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+					docContent.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 					String gicName = DocClassUtil.getArraySimpleName(fullTypeName);
 					if (!DocClassUtil.isPrimitive(gicName)) {
-						buildParams(gicName, 1, requiredFields, EMPTY_STR, reqParam);
+						buildParams(gicName, 1, requiredFields, EMPTY_STR, docContent);
 					}
 				} else if (DocClassUtil.isMap(fullTypeName)) {
-					reqParam.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+					docContent.append(paramName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 					String[] gicValTypes = DocClassUtil.getGicName(globGicName);
-					reqParam.append(MAP_KEY).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicValTypes[0])).append(VERTICAL_SEPARATORS).append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+					docContent.append(MAP_KEY).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicValTypes[0])).append(VERTICAL_SEPARATORS).append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 					if (gicValTypes.length == 2 && !DocClassUtil.isPrimitive(gicValTypes[1])) {
-						buildParams(gicValTypes[1], 2, requiredFields, EMPTY_STR, reqParam);
+						buildParams(gicValTypes[1], 2, requiredFields, EMPTY_STR, docContent);
 					}
 				} else {
-					buildParams(globGicName, 0, requiredFields, EMPTY_STR, reqParam);
+					buildParams(globGicName, 0, requiredFields, EMPTY_STR, docContent);
 				}
 			}
 		}
-		return reqParam.toString();
+		return docContent.toString();
 	}
 
 	private Map<String, String> getDocletTagMap(JavaMethod javaMethod, String tagName) {
@@ -524,7 +524,7 @@ public class SourceBuilder {
 	}
 
 	private String buildMethodReturn(JavaMethod javaMethod, List<String> requiredFields) {
-		StringBuilder reqParam = new StringBuilder();
+		StringBuilder docContent = new StringBuilder();
 		JavaType javaType = javaMethod.getReturnType();
 		String fullTypeName = javaType.getFullyQualifiedName();
 		String globGicName = javaType.getGenericCanonicalName();
@@ -539,62 +539,62 @@ public class SourceBuilder {
 			}
 			
 			if ("void".equals(fullTypeName)) {
-				reqParam.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append("null").append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+				docContent.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append("null").append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 			} else if (DocClassUtil.isPrimitive(fullTypeName)) {
-				reqParam.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+				docContent.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 			} else if (DocClassUtil.isCollection(fullTypeName)) {
 				String[] gicNames = DocClassUtil.getGicName(globGicName);
 				String gicName = gicNames[0];
-				reqParam.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)+LEFT_PARENTHESES+DocClassUtil.getSimpleName(gicName)+RIGHT_PARENTHESES).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+				docContent.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)+LEFT_PARENTHESES+DocClassUtil.getSimpleName(gicName)+RIGHT_PARENTHESES).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 				if (!DocClassUtil.isPrimitive(gicName)) {
-					buildParams(gicName, 0, requiredFields, EMPTY_STR, reqParam);
+					buildParams(gicName, 0, requiredFields, EMPTY_STR, docContent);
 				}
 			} else if(DocClassUtil.isArray(fullTypeName)) {
-				reqParam.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+				docContent.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 				String gicName = DocClassUtil.getArraySimpleName(fullTypeName);
 				if (!DocClassUtil.isPrimitive(gicName)) {
-					buildParams(gicName, 0, requiredFields, EMPTY_STR, reqParam);
+					buildParams(gicName, 0, requiredFields, EMPTY_STR, docContent);
 				}
 			} else if (DocClassUtil.isMap(fullTypeName)) {
-				reqParam.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+				docContent.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 				String[] gicNames = DocClassUtil.getGicName(globGicName);
-				reqParam.append(MAP_KEY).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicNames[0])).append(VERTICAL_SEPARATORS).append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+				docContent.append(MAP_KEY).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicNames[0])).append(VERTICAL_SEPARATORS).append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 				if (gicNames.length == 2 && !DocClassUtil.isPrimitive(gicNames[1])) {
-					buildParams(gicNames[1], 1, requiredFields, EMPTY_STR, reqParam);
+					buildParams(gicNames[1], 1, requiredFields, EMPTY_STR, docContent);
 				}
 			} else {
-				buildParams(globGicName, 0, requiredFields, EMPTY_STR, reqParam);
+				buildParams(globGicName, 0, requiredFields, EMPTY_STR, docContent);
 			}
 		}
-		return reqParam.toString();
+		return docContent.toString();
 	}
 	
-	public void buildParams(String className, int k, List<String> requiredFields, String parentFieldName, StringBuilder docContent) {
-		String fullTypeName = DocClassUtil.getSimpleName(className);
-		JavaClass cls = builder.getClassByName(fullTypeName);
+	public void buildParams(String className, int tabCount, List<String> requiredFields, String parentFieldName, StringBuilder docContent) {
+		String globalTypeName = DocClassUtil.getSimpleName(className);
 		int i = 0;
-		String[] globGicNames = DocClassUtil.getGicName(className);
-		List<JavaField> fields = getFields(cls);
-		if (DocClassUtil.isPrimitive(fullTypeName)) {
+		String[] globalGicNames = DocClassUtil.getGicName(className);
+		if (DocClassUtil.isPrimitive(globalTypeName)) {
 			docContent.append(DocClassUtil.processTypeNameForParams(className));
-		} else if (DocClassUtil.isCollection(fullTypeName)) {
-			if (globGicNames.length != 0) {
-				String gicName = globGicNames[0];
-				if (gicName.length() == 1 || DocClassUtil.isPrimitive(gicName)) {
+		} else if (DocClassUtil.isCollection(globalTypeName)) {
+			if (globalGicNames.length != 0) {
+				String gicName = globalGicNames[0];
+				if (gicName.length() == 1) {
 					docContent.append(DocClassUtil.processTypeNameForParams(className));
 				} else {
-					buildParams(gicName, k + 1, requiredFields, parentFieldName, docContent);
+					buildParams(gicName, tabCount + 1, requiredFields, parentFieldName, docContent);
 				}
 			} else {
 				docContent.append(DocClassUtil.processTypeNameForParams(className));
 			}
-		} else if (DocClassUtil.isArray(fullTypeName)) {
+		} else if (DocClassUtil.isArray(globalTypeName)) {
 			docContent.append(DocClassUtil.processTypeNameForParams(className));
-		} else if (DocClassUtil.isMap(fullTypeName)) {
-			if (globGicNames.length == 2) {
-				buildParams(globGicNames[1], k + 1, requiredFields, parentFieldName, docContent);
+		} else if (DocClassUtil.isMap(globalTypeName)) {
+			if (globalGicNames.length == 2) {
+				buildParams(globalGicNames[1], tabCount + 1, requiredFields, parentFieldName, docContent);
 			}
 		} else {
+			JavaClass cls = builder.getClassByName(globalTypeName);
+			List<JavaField> fields = getFields(cls);
 			out: 
 			for (JavaField field : fields) {
 				JavaClass declaringClass = field.getDeclaringClass();
@@ -611,7 +611,6 @@ public class SourceBuilder {
 					}
 					
 					JavaClass javaType = field.getType();
-
 					String fieldTypeName = javaType.getFullyQualifiedName();
 					String fieldGicName = javaType.getGenericCanonicalName();
 
@@ -625,7 +624,7 @@ public class SourceBuilder {
 					String strRequired = this.isRequired(fieldName, requiredFields, parentFieldName);
 					
 					StringBuilder pre = new StringBuilder();
-					for (int j = 0; j < k; j++) {
+					for (int j = 0; j < tabCount; j++) {
 						pre.append(BLANK_SPACE_4);
 					}
 					
@@ -647,7 +646,7 @@ public class SourceBuilder {
 							String[] simpleGicName = DocClassUtil.getGicName(fieldGicName);
 							fieldTypeNameDesc.append(LEFT_PARENTHESES).append(DocClassUtil.processTypeNameForParams(simpleGicName[0])).append(RIGHT_PARENTHESES); 
 						} else if (fieldTypeName.length() == 1) {
-							fieldTypeNameDesc.append(DocClassUtil.processTypeNameForParams(globGicNames[i])); 
+							fieldTypeNameDesc.append(DocClassUtil.processTypeNameForParams(globalGicNames[i])); 
 						} else {
 							fieldTypeNameDesc.append(DocClassUtil.processTypeNameForParams(fieldTypeName));
 						}
@@ -666,44 +665,43 @@ public class SourceBuilder {
 							String[] gicValTypes = DocClassUtil.getGicName(fieldGicName);
 							docContent.append(MAP_KEY).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicValTypes[0])).append(VERTICAL_SEPARATORS).append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 							if (gicValTypes.length == 2 && !DocClassUtil.isPrimitive(gicValTypes[1])) {
-								buildParams(gicValTypes[1], k + 2, requiredFields, nextParentFieldName, docContent);
+								buildParams(gicValTypes[1], tabCount + 2, requiredFields, nextParentFieldName, docContent);
 							}
 						} else if (DocClassUtil.isCollection(fieldTypeName)) {
 							String[] gicNames = DocClassUtil.getGicName(fieldGicName);
 							if (gicNames.length == 1) {
 								String gicName = gicNames[0];
-								if (!fullTypeName.equals(gicName) && !DocClassUtil.isPrimitive(gicName)) {
-									buildParams(gicName, k + 1, requiredFields, nextParentFieldName, docContent);
+								if (!globalTypeName.equals(gicName) && !DocClassUtil.isPrimitive(gicName)) {
+									buildParams(gicName, tabCount + 1, requiredFields, nextParentFieldName, docContent);
 								}
 							}
 						} else if (DocClassUtil.isArray(fieldTypeName)) {
 							fieldGicName = DocClassUtil.getArraySimpleName(fieldGicName);
-							if (!fullTypeName.equals(fieldGicName) && !DocClassUtil.isPrimitive(fieldGicName)) {
-								buildParams(fieldGicName, k + 1, requiredFields, nextParentFieldName, docContent);
+							if (!globalTypeName.equals(fieldGicName) && !DocClassUtil.isPrimitive(fieldGicName)) {
+								buildParams(fieldGicName, tabCount + 1, requiredFields, nextParentFieldName, docContent);
 							}
 						} else if (fieldTypeName.length() == 1) {
-							if (i < globGicNames.length) {
-								String gicName = globGicNames[i];
-								if (!DocClassUtil.isPrimitive(gicName)) {
-									if (DocClassUtil.isCollection(gicName)) {
-										String ggicName = DocClassUtil.getGicName(gicName)[0];
-										buildParams(ggicName, k + 1, requiredFields, nextParentFieldName, docContent);
-									} else if (DocClassUtil.isMap(gicName)) {
-										String ggicName = DocClassUtil.getGicName(gicName)[1];
-										buildParams(ggicName, k + 1, requiredFields, nextParentFieldName, docContent);
-									} else if(DocClassUtil.isArray(fullTypeName)) {
-										String ggicName = DocClassUtil.getArraySimpleName(gicName);
-										buildParams(ggicName, k + 1, requiredFields, nextParentFieldName, docContent);
-									} else {
-										buildParams(gicName, k + 1, requiredFields, nextParentFieldName, docContent);
-									}
-								} 
+							if (i < globalGicNames.length) {
+								String gicName = globalGicNames[i];
+								if (DocClassUtil.isPrimitive(gicName)) {
+								} else if (DocClassUtil.isCollection(gicName)) {
+									String ggicName = DocClassUtil.getGicName(gicName)[0];
+									buildParams(ggicName, tabCount + 1, requiredFields, nextParentFieldName, docContent);
+								} else if (DocClassUtil.isMap(gicName)) {
+									String ggicName = DocClassUtil.getGicName(gicName)[1];
+									buildParams(ggicName, tabCount + 1, requiredFields, nextParentFieldName, docContent);
+								} else if(DocClassUtil.isArray(globalTypeName)) {
+									String ggicName = DocClassUtil.getArraySimpleName(gicName);
+									buildParams(ggicName, tabCount + 1, requiredFields, nextParentFieldName, docContent);
+								} else {
+									buildParams(gicName, tabCount + 1, requiredFields, nextParentFieldName, docContent);
+								}
 							}
 							i++;
-						} else if (fullTypeName.equals(fieldTypeName)) {
+						} else if (globalTypeName.equals(fieldTypeName)) {
 							// do nothing
 						} else {
-							buildParams(fieldGicName, k + 1, requiredFields, nextParentFieldName, docContent);
+							buildParams(fieldGicName, tabCount + 1, requiredFields, nextParentFieldName, docContent);
 						}
 					}
 				}
@@ -766,7 +764,6 @@ public class SourceBuilder {
 	
 	public void buildJson(String className, boolean isResp, StringBuilder jsonContent) {
 		String globTypeName = DocClassUtil.getSimpleName(className);
-		JavaClass cls = builder.getClassByName(globTypeName);
 		String[] globGicName = DocClassUtil.getGicName(className);
 		if (DocClassUtil.isPrimitive(globTypeName)) {
 			jsonContent.append(DocClassUtil.processTypeNameForParams(className));
@@ -807,6 +804,7 @@ public class SourceBuilder {
 			}
 			jsonContent.append(RIGHT_CURLY_BRACKETS);
 		} else {
+			JavaClass cls = builder.getClassByName(globTypeName);
 			List<JavaField> fields = getFields(cls);
 			jsonContent.append(LEFT_CURLY_BRACKETS);
 			int i = 0;
