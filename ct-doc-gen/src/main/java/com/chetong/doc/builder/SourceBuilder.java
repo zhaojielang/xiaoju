@@ -243,7 +243,11 @@ public class SourceBuilder {
 		boolean isEnum = false;
 		if (cls.isEnum()) {
 			List<String> imports = cls.getSource().getImports();
-			isEnum = imports.contains(GlobalConstants.BASE_ENUM_FULLY_CT) || imports.contains(GlobalConstants.BASE_ENUM_FULLY_BB);
+			for (String importEnum : imports) {
+				if(GlobalConstants.BASE_ENUM.containsKey(importEnum)) {
+					return true;
+				}
+			}
 		}
 		return isEnum;
 	}
@@ -567,14 +571,7 @@ public class SourceBuilder {
 	
 	public void buildParams(String className, int k, List<String> requiredFields, String parentFieldName, StringBuilder docContent) {
 		String fullTypeName = DocClassUtil.getSimpleName(className);
-		JavaClass cls;
-		try {
-			cls = builder.getClassByName(fullTypeName);
-		} catch (Exception e) {
-			docContent.append(DocClassUtil.processTypeNameForParams(className));
-			return;
-		}
-
+		JavaClass cls = builder.getClassByName(fullTypeName);
 		int i = 0;
 		String[] globGicNames = DocClassUtil.getGicName(className);
 		List<JavaField> fields = getFields(cls);
@@ -769,13 +766,7 @@ public class SourceBuilder {
 	
 	public void buildJson(String className, boolean isResp, StringBuilder jsonContent) {
 		String globTypeName = DocClassUtil.getSimpleName(className);
-		JavaClass cls;
-		try {
-			cls = builder.getClassByName(globTypeName);
-		} catch (Exception e) {
-			jsonContent.append(DocUtil.jsonValueByType(globTypeName));
-			return;
-		}
+		JavaClass cls = builder.getClassByName(globTypeName);
 		String[] globGicName = DocClassUtil.getGicName(className);
 		if (DocClassUtil.isPrimitive(globTypeName)) {
 			jsonContent.append(DocClassUtil.processTypeNameForParams(className));

@@ -7,6 +7,8 @@ public class GlobalConstants {
 	
 	public static final Map<String,String> CONTROLLER_ANNOTATION = new HashMap<>();
 	
+	public static final Map<String,String> BASE_ENUM = new HashMap<>();
+	
 	public static final Map<String,String> SERVICE_ANNOTATION = new HashMap<>();
 	
 	public static final Map<String,String> REQUEST_MAPPING_ANNOTATION = new HashMap<>();
@@ -19,9 +21,6 @@ public class GlobalConstants {
 	
 	/** 忽略注解名称 */
 	public static final String IGNORE_TAG = "ignore";
-	
-	/** BaseEnum注解名称 */
-	public static final String BASE_ENUM = "BaseEnum";
 	
 	/** CT BaseEnum注解全名称 */
 	public static final String BASE_ENUM_FULLY_CT = "com.chetong.aic.enums.BaseEnum";
@@ -44,9 +43,6 @@ public class GlobalConstants {
 	/** GetMapping注解全名称 */
 	public static final String GET_MAPPING_FULLY = "org.springframework.web.bind.annotation.GetMapping";
 	
-	/** ModelAndView注解名称 */
-	public static final String MODEL_AND_VIEW = "org.springframework.web.servlet.ModelAndView";
-	
 	/** ModelAndView注解全名称 */
 	public static final String MODEL_AND_VIEW_FULLY = "org.springframework.web.servlet.ModelAndView";
 
@@ -60,7 +56,10 @@ public class GlobalConstants {
 	public static final String PARAM_REQUIRED_FULLY = "com.chetong.aic.annotation.ParamRequired";
 	
 	/** 基础Model名称 */
-	public static final String BASE_MODEL_FULLY = "com.chetong.aic.entity.base.BaseModel";
+	public static final String BASE_MODEL_FULLY_CT = "com.chetong.aic.entity.base.BaseModel";
+	
+	/** 基础Model名称 */
+	public static final String BASE_MODEL_FULLY_BB = "com.chetong.aic.entity.base.BaseModel";
 	
 	/** HTTP 请求体 */
 	public static final String HTTP_SERVLET_REQUEST = "javax.servlet.http.HttpServletRequest";
@@ -71,6 +70,11 @@ public class GlobalConstants {
 	static {
 		CONTROLLER_ANNOTATION.put(GlobalConstants.CONTROLLER_FULLY,GlobalConstants.CONTROLLER_FULLY);
 		CONTROLLER_ANNOTATION.put(GlobalConstants.RESTCONTROLLER_FULLY,GlobalConstants.RESTCONTROLLER_FULLY);
+	}
+	
+	static {
+		BASE_ENUM.put(GlobalConstants.BASE_ENUM_FULLY_CT,GlobalConstants.BASE_ENUM_FULLY_CT);
+		BASE_ENUM.put(GlobalConstants.BASE_ENUM_FULLY_BB,GlobalConstants.BASE_ENUM_FULLY_BB);
 	}
 	
 	static {
@@ -92,7 +96,8 @@ public class GlobalConstants {
 	}
 	
 	static {
-		IGNORE_CLASS.put(GlobalConstants.BASE_MODEL_FULLY,GlobalConstants.BASE_MODEL_FULLY);
+		IGNORE_CLASS.put(GlobalConstants.BASE_MODEL_FULLY_CT,GlobalConstants.BASE_MODEL_FULLY_CT);
+		IGNORE_CLASS.put(GlobalConstants.BASE_MODEL_FULLY_BB,GlobalConstants.BASE_MODEL_FULLY_BB);
 		IGNORE_CLASS.put(GlobalConstants.HTTP_SERVLET_REQUEST,GlobalConstants.HTTP_SERVLET_REQUEST);
 		IGNORE_CLASS.put(GlobalConstants.HTTP_SERVLET_RESPONSE,GlobalConstants.HTTP_SERVLET_RESPONSE);
 	}
