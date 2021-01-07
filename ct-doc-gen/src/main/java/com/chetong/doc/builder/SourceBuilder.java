@@ -636,7 +636,15 @@ public class SourceBuilder {
 						String[] simpleGicName = DocClassUtil.getGicName(fieldGicName);
 						fieldTypeNameDesc.append(LEFT_PARENTHESES).append(DocClassUtil.processTypeNameForParams(simpleGicName[0])).append(RIGHT_PARENTHESES); 
 					} else if (fieldTypeName.length() == 1) {
-						fieldTypeNameDesc.append(DocClassUtil.processTypeNameForParams(globalGicNames[i])); 
+						String gicName = globalGicNames[i];
+						String simpleName = DocClassUtil.getSimpleName(gicName);
+						if (DocClassUtil.isCollection(simpleName)) {
+							fieldTypeNameDesc.append(DocClassUtil.processTypeNameForParams(simpleName));
+							String[] ggicName = DocClassUtil.getGicName(gicName);
+							fieldTypeNameDesc.append(LEFT_PARENTHESES).append(DocClassUtil.processTypeNameForParams(ggicName[0])).append(RIGHT_PARENTHESES); 
+						} else {
+							fieldTypeNameDesc.append(DocClassUtil.processTypeNameForParams(gicName)); 
+						}
 					} else {
 						fieldTypeNameDesc.append(DocClassUtil.processTypeNameForParams(fieldTypeName));
 					}
@@ -652,13 +660,7 @@ public class SourceBuilder {
 					
 					String nextParentFieldName = StringUtil.isNotEmpty(parentFieldName) || PARAM_NAME_JSON_NAME.equals(fieldName) ? EMPTY_STR : parentFieldName+fieldName+CONNECTOR;
 					if (DocClassUtil.isPrimitive(fieldTypeName)) {
-//						docContent.append(fieldName).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fieldTypeName)).append(VERTICAL_SEPARATORS);
-//						if (StringUtil.isNotEmpty(comment)) {
-//							comment = comment.replaceAll(NEW_LINE_BREAK, SPACE_STR);
-//							docContent.append(comment).append(VERTICAL_SEPARATORS).append(strRequired).append(LINE_BREAK_KEY);
-//						} else {
-//							docContent.append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(strRequired).append(LINE_BREAK_KEY);
-//						}
+						// do nothing
 					} else if (DocClassUtil.isMap(fieldTypeName)) {
 						docContent.append(pre);
 						String[] gicNames = DocClassUtil.getGicName(fieldGicName);
