@@ -770,56 +770,56 @@ public class SourceBuilder {
 		} else if (DocClassUtil.isPrimitive(fullyQualifiedName)) {
 			jsonContent.append(DocUtil.jsonValueByType(fullyQualifiedName));
 		} else {
-			buildJson(genericCanonicalName, isResp, jsonContent);
+			buildJson(genericCanonicalName, 0, isResp, jsonContent);
 		}
 		return jsonContent;
 	}
 	
-	public void buildJson(String className, boolean isResp, StringBuilder jsonContent) {
-		String globTypeName = DocClassUtil.getSimpleName(className);
-		String[] globGicName = DocClassUtil.getGicName(className);
-		if (DocClassUtil.isPrimitive(globTypeName)) {
-			jsonContent.append(DocClassUtil.processTypeNameForParams(className));
-		} else if (DocClassUtil.isCollection(globTypeName)) {
-			jsonContent.append(LEFT_BRACKETS);
-			if (globGicName.length == 0) {
-				jsonContent.append(DocUtil.jsonValueByType(DEFAULT_JSON_TYPE));
+	public void buildJson(String className,int selfCount, boolean isResp, StringBuilder docContent) {
+		String globalTypeName = DocClassUtil.getSimpleName(className);
+		String[] globalGicNames = DocClassUtil.getGicName(className);
+		if (DocClassUtil.isPrimitive(globalTypeName)) {
+			docContent.append(DocClassUtil.processTypeNameForParams(className));
+		} else if (DocClassUtil.isCollection(globalTypeName)) {
+			docContent.append(LEFT_BRACKETS);
+			if (globalGicNames.length == 0) {
+				docContent.append(DocUtil.jsonValueByType(DEFAULT_JSON_TYPE));
 			} else {
-				String gicName = globGicName[0];
+				String gicName = globalGicNames[0];
 				if (DocClassUtil.isPrimitive(gicName)) {
-					jsonContent.append(DocUtil.jsonValueByType(gicName));
+					docContent.append(DocUtil.jsonValueByType(gicName));
 				} else {
-					buildJson(gicName, isResp, jsonContent);
+					buildJson(gicName, selfCount, isResp, docContent);
 				}
 			}
-			jsonContent.append(RIGHT_BRACKETS);
-		} else if(DocClassUtil.isArray(globTypeName)) {
-			jsonContent.append(LEFT_BRACKETS);
+			docContent.append(RIGHT_BRACKETS);
+		} else if(DocClassUtil.isArray(globalTypeName)) {
+			docContent.append(LEFT_BRACKETS);
 			String gicName = DocClassUtil.getArraySimpleName(className);
 			if (DocClassUtil.isPrimitive(gicName)) {
-				jsonContent.append(DocUtil.jsonValueByType(gicName));
+				docContent.append(DocUtil.jsonValueByType(gicName));
 			} else {
-				buildJson(gicName, isResp, jsonContent);
+				buildJson(gicName, selfCount, isResp, docContent);
 			}
-			jsonContent.append(RIGHT_BRACKETS);
-		} else if (DocClassUtil.isMap(globTypeName)) {
-			jsonContent.append(LEFT_CURLY_BRACKETS);
-			jsonContent.append(DOUBLE_QUOTATION).append(MAP_KEY).append(DOUBLE_QUOTATION).append(COLON);
-			if (globGicName.length == 2) {
-				String gicName = globGicName[1];
+			docContent.append(RIGHT_BRACKETS);
+		} else if (DocClassUtil.isMap(globalTypeName)) {
+			docContent.append(LEFT_CURLY_BRACKETS);
+			docContent.append(DOUBLE_QUOTATION).append(MAP_KEY).append(DOUBLE_QUOTATION).append(COLON);
+			if (globalGicNames.length == 2) {
+				String gicName = globalGicNames[1];
 				if (gicName.length() == 1 || DocClassUtil.isPrimitive(gicName)) {
-					jsonContent.append(DocUtil.jsonValueByType(gicName));
+					docContent.append(DocUtil.jsonValueByType(gicName));
 				} else {
-					buildJson(globGicName[1], isResp, jsonContent);
+					buildJson(globalGicNames[1], selfCount, isResp, docContent);
 				}
 			} else {
-				jsonContent.append(DocUtil.jsonValueByType(DEFAULT_JSON_TYPE));
+				docContent.append(DocUtil.jsonValueByType(DEFAULT_JSON_TYPE));
 			}
-			jsonContent.append(RIGHT_CURLY_BRACKETS);
+			docContent.append(RIGHT_CURLY_BRACKETS);
 		} else {
-			JavaClass cls = builder.getClassByName(globTypeName);
+			JavaClass cls = builder.getClassByName(globalTypeName);
 			List<JavaField> fields = getFields(cls);
-			jsonContent.append(LEFT_CURLY_BRACKETS);
+			docContent.append(LEFT_CURLY_BRACKETS);
 			int i = 0;
 			out: 
 			for (JavaField field : fields) {
@@ -846,75 +846,86 @@ public class SourceBuilder {
 					
 					String fieldFQName = field.getType().getFullyQualifiedName();
 					String fieldGCName = field.getType().getGenericCanonicalName();
-					jsonContent.append(DOUBLE_QUOTATION).append(fieldName).append(DOUBLE_QUOTATION).append(COLON);
+					docContent.append(DOUBLE_QUOTATION).append(fieldName).append(DOUBLE_QUOTATION).append(COLON);
 					if (DocClassUtil.isPrimitive(fieldFQName)) {
-						jsonContent.append(DocUtil.getValByTypeAndFieldName(fieldFQName, field.getName()));
+						docContent.append(DocUtil.getValByTypeAndFieldName(fieldFQName, field.getName()));
 					} else if (DocClassUtil.isCollection(fieldFQName)) {
-						jsonContent.append(LEFT_BRACKETS);
+						docContent.append(LEFT_BRACKETS);
 						String[] gicNames = DocClassUtil.getGicName(fieldGCName);
 						if (gicNames.length == 1) {
 							String gicName = gicNames[0];
 							if (gicName.length() == 1 || DocClassUtil.isPrimitive(gicName)) {
-								jsonContent.append(DocUtil.jsonValueByType(gicName));
-							} else if(globTypeName.equals(gicName)){
-								// do nothing
+								docContent.append(DocUtil.jsonValueByType(gicName));
+							} else if(globalTypeName.equals(gicName)){
+								if (selfCount == 0) {
+									buildJson(gicName,selfCount+1, isResp,docContent);
+								}
 							}else {
-								buildJson(gicName,isResp,jsonContent);
+								buildJson(gicName,selfCount, isResp,docContent);
 							}
 						} else {
-							jsonContent.append(DocUtil.jsonValueByType(DEFAULT_JSON_TYPE));
+							docContent.append(DocUtil.jsonValueByType(DEFAULT_JSON_TYPE));
 						}
-						jsonContent.append(RIGHT_BRACKETS);
+						docContent.append(RIGHT_BRACKETS);
 					} else if(DocClassUtil.isArray(fieldFQName)) {
-						jsonContent.append(LEFT_BRACKETS);
+						docContent.append(LEFT_BRACKETS);
 						String gicName = DocClassUtil.getArraySimpleName(fieldFQName);
 						if (DocClassUtil.isPrimitive(gicName)) {
-							jsonContent.append(DocUtil.jsonValueByType(gicName));
+							docContent.append(DocUtil.jsonValueByType(gicName));
+						} else if(globalTypeName.equals(gicName)){
+							if (selfCount == 0) {
+								buildJson(gicName,selfCount+1, isResp,docContent);
+							}
 						} else {
-							buildJson(gicName, isResp,jsonContent);
+							buildJson(gicName,selfCount, isResp,docContent);
 						}
-						jsonContent.append(RIGHT_BRACKETS);
+						docContent.append(RIGHT_BRACKETS);
 					} else if (DocClassUtil.isMap(fieldFQName)) {
 						String[] gicNames = DocClassUtil.getGicName(fieldGCName);
-						jsonContent.append(LEFT_CURLY_BRACKETS).append(DOUBLE_QUOTATION).append(MAP_KEY).append(DOUBLE_QUOTATION).append(COLON);
+						docContent.append(LEFT_CURLY_BRACKETS).append(DOUBLE_QUOTATION).append(MAP_KEY).append(DOUBLE_QUOTATION).append(COLON);
 						String gicName = gicNames[1];
 						if (DocClassUtil.isPrimitive(gicName)) {
-							jsonContent.append(DocUtil.jsonValueByType(gicName));
+							docContent.append(DocUtil.jsonValueByType(gicName));
+						} else if(globalTypeName.equals(gicName)){
+							if (selfCount == 0) {
+								buildJson(gicName,selfCount+1, isResp,docContent);
+							}
 						} else {
-							buildJson(gicName,isResp,jsonContent);
+							buildJson(gicName,selfCount,isResp,docContent);
 						}
-						jsonContent.append(RIGHT_CURLY_BRACKETS);
+						docContent.append(RIGHT_CURLY_BRACKETS);
 					} else if (fieldFQName.length() == 1) {
-						String gicName = globGicName[i];
+						String gicName = globalGicNames[i];
 						if (DocClassUtil.isPrimitive(gicName)) {
-							jsonContent.append(DocUtil.jsonValueByType(gicName));
+							docContent.append(DocUtil.jsonValueByType(gicName));
+						} else if(globalTypeName.equals(gicName)){
+							if (selfCount == 0) {
+								buildJson(gicName,selfCount, isResp,docContent);
+							}
 						} else {
-							buildJson(gicName, isResp,jsonContent);
+							buildJson(gicName,selfCount, isResp,docContent);
 						}
 						i++;
-					}else if(globTypeName.equals(fieldFQName)) {
-						// 带有本身属性的不再往下解析
+					}else if(globalTypeName.equals(fieldFQName)) {
+						// 带有本身属性的只解析一级
+						if (selfCount == 0) {
+							buildJson(fieldFQName, selfCount+1, isResp,docContent);
+						}
 					} else {
-						buildJson(fieldGCName, isResp,jsonContent);
+						buildJson(fieldGCName, selfCount, isResp,docContent);
 					}
-					jsonContent.append(COMMA);
+					docContent.append(COMMA);
 				}
 			}
-			if (jsonContent.toString().contains(COMMA)) {
-				jsonContent.deleteCharAt(jsonContent.lastIndexOf(COMMA));
+			if (docContent.toString().contains(COMMA)) {
+				docContent.deleteCharAt(docContent.lastIndexOf(COMMA));
 			}
-			jsonContent.append(RIGHT_CURLY_BRACKETS);
+			docContent.append(RIGHT_CURLY_BRACKETS);
 		}
 	}
 
 	private String isRequired(String fieldStr, List<String> requiredFields, String parentFieldName) {
-		boolean isRequired = false;
-		for (int i = 0; i < requiredFields.size(); i++) {
-			isRequired = requiredFields.get(i).contains(parentFieldName+fieldStr);
-			if (isRequired) {
-				break;
-			}
-		}
+		boolean isRequired = requiredFields.contains(parentFieldName+fieldStr);
 		return isRequired ? "`"+isRequired + "`" : String.valueOf(isRequired);
 	}
 
