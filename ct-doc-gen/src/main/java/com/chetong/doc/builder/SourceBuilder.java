@@ -917,7 +917,7 @@ public class SourceBuilder {
 					docContent.append(COMMA);
 				}
 			}
-			if (docContent.toString().contains(COMMA)) {
+			if (docContent.indexOf(COMMA) > 0) {
 				docContent.deleteCharAt(docContent.lastIndexOf(COMMA));
 			}
 			docContent.append(RIGHT_CURLY_BRACKETS);

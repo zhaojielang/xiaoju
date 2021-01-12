@@ -18,9 +18,7 @@ public class IgnoreFields {
 	
 	public static final String RESPONSE = "response";
 	
-	public static final String OBJECT = "response";
-	
-	public static final String Object = "Object";
+	public static final String OBJECT = "Object";
 	
 	public static final String TIMESTAMP = "Timestamp";
 	

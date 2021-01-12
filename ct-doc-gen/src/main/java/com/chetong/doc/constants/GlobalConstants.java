@@ -50,10 +50,16 @@ public class GlobalConstants {
 	public static final String SERVICE_FULLY = "org.springframework.stereotype.Service";
 
 	/** LogTail注解全名称 */
-	public static final String LOG_TAIL_FULLY = "com.chetong.aic.annotation.LogTail";
+	public static final String LOG_TAIL_FULLY_CT = "com.chetong.aic.annotation.LogTail";
+	
+	/** LogTail注解全名称 */
+	public static final String LOG_TAIL_FULLY_BB = "com.baobei.health.annotation.LogTail";
 
 	/** ParamRequired注解全名称 */
-	public static final String PARAM_REQUIRED_FULLY = "com.chetong.aic.annotation.ParamRequired";
+	public static final String PARAM_REQUIRED_FULLY_CT = "com.chetong.aic.annotation.ParamRequired";
+	
+	/** ParamRequired注解全名称 */
+	public static final String PARAM_REQUIRED_FULLY_BB = "com.baobei.health.annotation.ParamRequired";
 	
 	/** 基础Model名称 */
 	public static final String BASE_MODEL_FULLY_CT = "com.chetong.aic.entity.base.BaseModel";
@@ -88,11 +94,11 @@ public class GlobalConstants {
 	}
 	
 	static {
-		REQUIRED_ANNOTATION.put(GlobalConstants.PARAM_REQUIRED_FULLY,GlobalConstants.PARAM_REQUIRED_FULLY);
+		REQUIRED_ANNOTATION.put(GlobalConstants.PARAM_REQUIRED_FULLY_CT,GlobalConstants.PARAM_REQUIRED_FULLY_CT);
 	}
 	
 	static {
-		LOG_TAIL_ANNOTATION.put(GlobalConstants.LOG_TAIL_FULLY,GlobalConstants.LOG_TAIL_FULLY);
+		LOG_TAIL_ANNOTATION.put(GlobalConstants.LOG_TAIL_FULLY_CT,GlobalConstants.LOG_TAIL_FULLY_CT);
 	}
 	
 	static {
