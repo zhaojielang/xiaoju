@@ -54,6 +54,7 @@ public class SourceBuilder {
 	private static final String BLANK_SPACE_4 = "&nbsp;&nbsp;&nbsp;&nbsp;";
 	private static final String DEFAULT_JSON_TYPE = "java.lang.Object";
 	private static final String MAP_KEY= "mapKey";
+	private static final String MAP_VAL= "mapVal";
 	private static final String ANNOTATION_VALUE_KEY = "value";
 	private static final String MODIFIER_PRIVATE = "private";
 	private static final String MODIFIER_PUBLIC = "public";
@@ -662,11 +663,17 @@ public class SourceBuilder {
 					if (DocClassUtil.isPrimitive(fieldTypeName)) {
 						// do nothing
 					} else if (DocClassUtil.isMap(fieldTypeName)) {
-						docContent.append(pre);
+						docContent.append(pre).append(BLANK_SPACE_4);
 						String[] gicNames = DocClassUtil.getGicName(fieldGicName);
 						docContent.append(MAP_KEY).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicNames[0])).append(VERTICAL_SEPARATORS).append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
-						if (gicNames.length == 2 && gicNames[1].length() > 1) {
-							buildParams(gicNames[1], tabCount + 2, selfCount, requiredFields, nextParentFieldName, docContent);
+						if (gicNames.length == 2) {
+							String gicName = gicNames[1];
+							if (DocClassUtil.isPrimitive(gicName)) {
+								docContent.append(pre).append(BLANK_SPACE_4);
+								docContent.append(MAP_VAL).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(gicName)).append(VERTICAL_SEPARATORS).append(NO_COMENT_DESC).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
+							} else {
+								buildParams(gicNames[1], tabCount + 2, selfCount, requiredFields, nextParentFieldName, docContent);
+							}
 						}
 					} else if (DocClassUtil.isCollection(fieldTypeName)) {
 						String[] gicNames = DocClassUtil.getGicName(fieldGicName);
