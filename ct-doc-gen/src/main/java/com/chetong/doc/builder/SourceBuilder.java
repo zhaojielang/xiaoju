@@ -58,6 +58,7 @@ public class SourceBuilder {
 	private static final String ANNOTATION_VALUE_KEY = "value";
 	private static final String MODIFIER_PRIVATE = "private";
 	private static final String MODIFIER_PUBLIC = "public";
+	private static final String RESULT_VOID = "void";
 	private static final String LINE_BREAK_KEY = "\n";
 	private static final String NEW_LINE_BREAK = "\r|\n";
 	private static final String CONNECTOR = ".";
@@ -539,7 +540,7 @@ public class SourceBuilder {
 				comment = NO_COMENT_DESC;
 			}
 			
-			if ("void".equals(fullTypeName)) {
+			if (RESULT_VOID.equals(fullTypeName)) {
 				docContent.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append("null").append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
 			} else if (DocClassUtil.isPrimitive(fullTypeName)) {
 				docContent.append(NO_PARAM_NAME).append(VERTICAL_SEPARATORS).append(DocClassUtil.processTypeNameForParams(fullTypeName)).append(VERTICAL_SEPARATORS).append(comment).append(VERTICAL_SEPARATORS).append(IS_REQUIRED_FALSE).append(LINE_BREAK_KEY);
@@ -680,10 +681,10 @@ public class SourceBuilder {
 						if (gicNames.length == 1) {
 							String gicName = gicNames[0];
 							String simpleName = DocClassUtil.getSimpleName(gicName);
-							if (globalTypeName.equals(gicName)) {
-								if (selfCount > 0 || DocClassUtil.isPrimitive(simpleName) || builder.getClassByName(simpleName).isEnum()) {
-									// do nothing
-								}else {
+							if (DocClassUtil.isPrimitive(simpleName)) {
+								// do nothing
+							} else if (globalTypeName.equals(gicName)) {
+								if (selfCount <= 0 && !builder.getClassByName(simpleName).isEnum()) {
 									buildParams(gicName, tabCount + 1, selfCount+1, requiredFields, nextParentFieldName, docContent);
 								}
 							} else {
@@ -760,7 +761,7 @@ public class SourceBuilder {
 		JavaType returnType = method.getReturnType();
 		String fqTypeName = returnType.getFullyQualifiedName();
 		String gcTypeName = returnType.getGenericCanonicalName();
-		if ("void".equals(gcTypeName)) {
+		if (RESULT_VOID.equals(gcTypeName)) {
 			return "this api return nothing.";
 		}
 		return JsonFormatUtil.formatJson(buildDataJson(fqTypeName, gcTypeName, true));
