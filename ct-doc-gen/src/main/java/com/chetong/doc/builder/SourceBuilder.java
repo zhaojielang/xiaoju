@@ -931,9 +931,9 @@ public class SourceBuilder {
 			docContent.append(RIGHT_CURLY_BRACKETS);
 		}
 	}
-
+	
 	private String isRequired(String fieldStr, List<String> requiredFields, String parentFieldName) {
-		boolean isRequired = requiredFields.contains(parentFieldName+fieldStr);
+		boolean isRequired = requiredFields.contains(DOUBLE_QUOTATION+parentFieldName+fieldStr+DOUBLE_QUOTATION);
 		return isRequired ? "`"+isRequired + "`" : String.valueOf(isRequired);
 	}
 
