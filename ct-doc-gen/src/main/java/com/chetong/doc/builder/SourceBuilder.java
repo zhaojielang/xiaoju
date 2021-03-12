@@ -85,7 +85,7 @@ public class SourceBuilder {
 	public static final String SERVICE_COUNT_KEY = "serviceCounter";
 	/**Enum总数Key*/
 	public static final String ENUM_COUNT_KEY = "enumCounter";
-
+	
 	private JavaProjectBuilder builder;
 	private List<JavaClass> javaClasses = new ArrayList<>();
 	private List<ApiReqHeader> headers;
@@ -230,6 +230,7 @@ public class SourceBuilder {
 						futures.add(future);
 					}
 				}
+			} else {
 			}
 		}
 		return futures;
