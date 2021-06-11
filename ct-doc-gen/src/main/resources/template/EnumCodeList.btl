@@ -5,6 +5,8 @@ for(doc in list){
 ## ${doc.desc}
 **EnumType:** ${doc.name}
 
+**isDeprecated:** ${doc.isDeprecated}
+
 <%if(isNotEmpty(doc.codeDesc)){%>
 
 Code |Description

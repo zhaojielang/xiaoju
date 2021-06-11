@@ -22,6 +22,8 @@ public class ApiDocContent implements Serializable {
     private String headers;
 
     private String contentType = "application/x-www-form-urlencoded";
+    
+    private String isDeprecated = "false";
 
     private String requestParams;
 
@@ -103,10 +105,18 @@ public class ApiDocContent implements Serializable {
         this.requestUsage = requestUsage;
     }
 
-    public String getContentType() {
+	public String getContentType() {
         return contentType;
     }
 
+	public String getIsDeprecated() {
+		return isDeprecated;
+	}
+	
+	public void setIsDeprecated(String isDeprecated) {
+		this.isDeprecated = isDeprecated;
+	}
+	
     public void setContentType(String contentType) {
         this.contentType = contentType;
     }

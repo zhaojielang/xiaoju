@@ -17,6 +17,6 @@ public class CollectionUtil {
 	}
 	
 	public static boolean isNotEmpty(List<?> list) {
-		return list != null && list.isEmpty();
+		return list != null && !list.isEmpty();
 	}
 }

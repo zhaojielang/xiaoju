@@ -12,6 +12,8 @@ for(doc in list){
 
 **Content-Type:** ${doc.contentType}
 
+**isDeprecated:** ${doc.isDeprecated}
+
 <%if(isNotEmpty(doc.headers)){%>
 **Request-headers:**
 
