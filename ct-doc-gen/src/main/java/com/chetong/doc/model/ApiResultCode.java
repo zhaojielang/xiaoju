@@ -8,6 +8,9 @@ public class ApiResultCode {
 	/** 枚举描述 */
 	private String desc;
 	
+	/** 是否弃用 */
+	private String isDeprecated = "false";;
+	
 	/** 枚举类名*/
 	private String enumType;
 	
@@ -27,6 +30,14 @@ public class ApiResultCode {
 
 	public void setDesc(String desc) {
 		this.desc = desc;
+	}
+
+	public String getIsDeprecated() {
+		return isDeprecated;
+	}
+
+	public void setIsDeprecated(String isDeprecated) {
+		this.isDeprecated = isDeprecated;
 	}
 
 	public String getEnumType() {

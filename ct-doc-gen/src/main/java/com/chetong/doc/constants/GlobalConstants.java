@@ -23,6 +23,9 @@ public class GlobalConstants {
 	public static final String IGNORE_TAG = "ignore";
 	
 	/** CT BaseEnum注解全名称 */
+	public static final String DEPRECATED_FULLY = "java.lang.Deprecated";
+	
+	/** CT BaseEnum注解全名称 */
 	public static final String BASE_ENUM_FULLY_CT = "com.chetong.aic.enums.BaseEnum";
 	
 	/** BB BaseEnum注解全名称 */
@@ -65,13 +68,16 @@ public class GlobalConstants {
 	public static final String BASE_MODEL_FULLY_CT = "com.chetong.aic.entity.base.BaseModel";
 	
 	/** 基础Model名称 */
-	public static final String BASE_MODEL_FULLY_BB = "com.chetong.aic.entity.base.BaseModel";
+	public static final String BASE_MODEL_FULLY_BB = "com.baobei.health.model.BaseModel";
 	
 	/** HTTP 请求体 */
 	public static final String HTTP_SERVLET_REQUEST = "javax.servlet.http.HttpServletRequest";
 	
 	/** HTTP 响应体 */
 	public static final String HTTP_SERVLET_RESPONSE = "javax.servlet.http.HttpServletResponse";
+	
+	/** FORMAT */
+	public static final String SIMPLE_DATE_FORMAT = "java.text.SimpleDateFormat";
 	
 	static {
 		CONTROLLER_ANNOTATION.put(GlobalConstants.CONTROLLER_FULLY,GlobalConstants.CONTROLLER_FULLY);
@@ -95,10 +101,12 @@ public class GlobalConstants {
 	
 	static {
 		REQUIRED_ANNOTATION.put(GlobalConstants.PARAM_REQUIRED_FULLY_CT,GlobalConstants.PARAM_REQUIRED_FULLY_CT);
+		REQUIRED_ANNOTATION.put(GlobalConstants.PARAM_REQUIRED_FULLY_BB,GlobalConstants.PARAM_REQUIRED_FULLY_BB);
 	}
 	
 	static {
 		LOG_TAIL_ANNOTATION.put(GlobalConstants.LOG_TAIL_FULLY_CT,GlobalConstants.LOG_TAIL_FULLY_CT);
+		LOG_TAIL_ANNOTATION.put(GlobalConstants.LOG_TAIL_FULLY_BB,GlobalConstants.LOG_TAIL_FULLY_BB);
 	}
 	
 	static {
@@ -106,5 +114,6 @@ public class GlobalConstants {
 		IGNORE_CLASS.put(GlobalConstants.BASE_MODEL_FULLY_BB,GlobalConstants.BASE_MODEL_FULLY_BB);
 		IGNORE_CLASS.put(GlobalConstants.HTTP_SERVLET_REQUEST,GlobalConstants.HTTP_SERVLET_REQUEST);
 		IGNORE_CLASS.put(GlobalConstants.HTTP_SERVLET_RESPONSE,GlobalConstants.HTTP_SERVLET_RESPONSE);
+		IGNORE_CLASS.put(GlobalConstants.SIMPLE_DATE_FORMAT,GlobalConstants.SIMPLE_DATE_FORMAT);
 	}
 }

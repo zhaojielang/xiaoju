@@ -144,12 +144,16 @@ public class SourceBuilder {
 					public Object call() throws Exception {
 						String serviceNameValue = null;
 						List<JavaAnnotation> classAnnotations = cls.getAnnotations();
+						boolean isDeprecated = false;
 						for (JavaAnnotation annotation : classAnnotations) {
 							String annotationName = annotation.getType().getFullyQualifiedName();
 							if (GlobalConstants.SERVICE_ANNOTATION.containsKey(annotationName)) {
-								serviceNameValue = annotation.getNamedParameter(ANNOTATION_VALUE_KEY).toString();
-								serviceNameValue = serviceNameValue.replaceAll(DOUBLE_QUOTATION, EMPTY_STR);
-								break;
+								Object annotationValue = annotation.getNamedParameter(ANNOTATION_VALUE_KEY);
+								if (StringUtil.isNotEmpty(annotationValue)) {
+									serviceNameValue = annotationValue.toString().replaceAll(DOUBLE_QUOTATION, EMPTY_STR);
+								}
+							} else if(GlobalConstants.DEPRECATED_FULLY.equalsIgnoreCase(annotationName)) {
+								isDeprecated = true;
 							}
 						}
 						
@@ -157,7 +161,7 @@ public class SourceBuilder {
 							return null;
 						}
 						
-						List<ApiDocContent> apiMethodDocs = buildServiceMethod(index, cls, serviceNameValue);
+						List<ApiDocContent> apiMethodDocs = buildServiceMethod(index, cls, serviceNameValue, isDeprecated);
 						ApiDoc apiDoc = new ApiDoc();
 						apiDoc.setIndex(index);
 						apiDoc.setName(serviceNameValue);
@@ -175,6 +179,7 @@ public class SourceBuilder {
 					public Object call() throws Exception {
 						List<JavaAnnotation> classAnnotations = cls.getAnnotations();
 						StringBuilder baseReqPath = new StringBuilder(basePathUrl);
+						boolean isDeprecated = false;
 						for (JavaAnnotation annotation : classAnnotations) {
 							String annotationName = annotation.getType().getFullyQualifiedName();
 							if (GlobalConstants.REQUEST_MAPPING_ANNOTATION.containsKey(annotationName)) {
@@ -183,11 +188,12 @@ public class SourceBuilder {
 									baseReqPath.append(SLASH);
 								}
 								baseReqPath.append(controllerReqPath);
-								break;
+							} else if(GlobalConstants.DEPRECATED_FULLY.equalsIgnoreCase(annotationName)) {
+								isDeprecated = true;
 							}
 						}
 						
-						List<ApiDocContent> apiMethodDocs = buildControllerMethod(index, cls, baseReqPath);
+						List<ApiDocContent> apiMethodDocs = buildControllerMethod(index, cls, baseReqPath, isDeprecated);
 						ApiDoc apiDoc = new ApiDoc();
 						apiDoc.setIndex(index);
 						apiDoc.setName(cls.getName());
@@ -202,14 +208,24 @@ public class SourceBuilder {
 				if (CollectionUtil.isNotEmpty(fields)) {
 					List<Expression> enumConstantArguments = fields.get(0).getEnumConstantArguments();
 					if (enumConstantArguments !=null && enumConstantArguments.size()>=2) {
+						List<JavaAnnotation> classAnnotations = cls.getAnnotations();
 						final int index = enumIndex;
 						enumIndex = enumIndex +1;
 						Future<Object> future = threadPool.submit(new Callable<Object>() {
 							@Override
 							public Object call() throws Exception {
+								boolean isDeprecated = false;
+								for (JavaAnnotation annotation : classAnnotations) {
+									String annotationName = annotation.getType().getFullyQualifiedName();
+									if(GlobalConstants.DEPRECATED_FULLY.equalsIgnoreCase(annotationName)) {
+										isDeprecated = true;
+									}
+								}
+								
 								ApiResultCode resultCode = new ApiResultCode();
 								resultCode.setName(cls.getName());
 								resultCode.setDesc(3+CONNECTOR+index+SPACE_STR+clsComment);
+								resultCode.setIsDeprecated(String.valueOf(isDeprecated));
 								StringBuilder codeDesc = new StringBuilder();
 								for (JavaField javaField : fields) {
 									List<Expression> arguments = javaField.getEnumConstantArguments();
@@ -217,7 +233,7 @@ public class SourceBuilder {
 											&& CollectionUtil.isNotEmpty(arguments)) {
 										codeDesc.append(arguments.get(0));
 										codeDesc.append(VERTICAL_SEPARATORS);
-										codeDesc.append(arguments.get(1));
+										codeDesc.append(deprecatedFormat(arguments.get(1), isDeprecated));
 										codeDesc.append(LINE_BREAK_KEY);
 									}
 								}
@@ -290,7 +306,7 @@ public class SourceBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<ApiDocContent> buildServiceMethod(int parentIndex, final JavaClass cls, String serviceName) {
+	public List<ApiDocContent> buildServiceMethod(int parentIndex, final JavaClass cls, String serviceName,boolean globalIsDeprecated) {
 		List<JavaClass> interfaces = cls.getInterfaces();
 		JavaClass interfaceCls = interfaces.isEmpty() ? null : interfaces.get(0);
 		List<JavaMethod> methods = cls.getMethods();
@@ -317,6 +333,7 @@ public class SourceBuilder {
 			}
 			
 			List<String> isRequireds = new ArrayList<>();
+			boolean isDeprecated = globalIsDeprecated;
 			List<JavaAnnotation> annotations = method.getAnnotations();
 			for (JavaAnnotation annotation : annotations) {
 				String annotationName = annotation.getType().getFullyQualifiedName();
@@ -354,6 +371,8 @@ public class SourceBuilder {
 					if (StringUtil.isNotEmpty(tailDesc)) {
 						methodDocument = tailDesc.replace(DOUBLE_QUOTATION, EMPTY_STR);
 					}
+				} else if(!isDeprecated && GlobalConstants.DEPRECATED_FULLY.equalsIgnoreCase(annotationName)) {
+					isDeprecated = true;
 				}
 			}
 			
@@ -375,9 +394,10 @@ public class SourceBuilder {
 			apiMethodDoc.setUrl(this.routeReqUrl);
 			apiMethodDoc.setHeaders(createHeaders(this.headers));
 			apiMethodDoc.setContentType(CONTENT_TYPE);
+			apiMethodDoc.setIsDeprecated(String.valueOf(isDeprecated));
 			apiMethodDoc.setType(METHOD_TYPE);
 			apiMethodDoc.setName(method.getName());
-			apiMethodDoc.setServiceName(serviceName + CONNECTOR + method.getName());
+			apiMethodDoc.setServiceName(deprecatedFormat(serviceName + CONNECTOR + method.getName(),isDeprecated));
 			apiMethodDoc.setRequestParams(requestParams);
 			apiMethodDoc.setRequestUsage(requestJson);
 			apiMethodDoc.setResponseParams(responseParams);
@@ -388,7 +408,7 @@ public class SourceBuilder {
 		return methodDocList;
 	}
 	
-	public List<ApiDocContent> buildControllerMethod(int parentIndex, final JavaClass cls, StringBuilder controllerReqPath) {
+	public List<ApiDocContent> buildControllerMethod(int parentIndex, final JavaClass cls, StringBuilder controllerReqPath,boolean globalIsDeprecated) {
 		List<JavaMethod> methods = cls.getMethods();
 		List<ApiDocContent> methodDocList = new ArrayList<>(methods.size());
 		
@@ -410,6 +430,7 @@ public class SourceBuilder {
 			StringBuilder apiReqUrl = new StringBuilder(controllerReqPath);
 			
 			List<String> isRequireds = new ArrayList<>();
+			boolean isDeprecated = globalIsDeprecated;
 			List<JavaAnnotation> annotations = method.getAnnotations();
 			for (JavaAnnotation annotation : annotations) {
 				String annotationName = annotation.getType().getFullyQualifiedName();
@@ -419,7 +440,8 @@ public class SourceBuilder {
 						apiReqUrl.append(SLASH);
 					}
 					apiReqUrl.append(methodReqPath);
-					break;
+				} else if(!isDeprecated && GlobalConstants.DEPRECATED_FULLY.equalsIgnoreCase(annotationName)) {
+					isDeprecated = true;
 				}
 			}
 			
@@ -430,8 +452,9 @@ public class SourceBuilder {
 			
 			ApiDocContent apiDocContent = new ApiDocContent();
 			apiDocContent.setDesc(parentIndex+CONNECTOR+index+SPACE_STR+methodDocument);
-			apiDocContent.setUrl(apiReqUrl.toString());
+			apiDocContent.setUrl(deprecatedFormat(apiReqUrl.toString(),isDeprecated));
 			apiDocContent.setHeaders(createHeaders(this.headers));
+			apiDocContent.setIsDeprecated(String.valueOf(isDeprecated));
 			apiDocContent.setType(METHOD_TYPE);
 			apiDocContent.setName(method.getName());
 			apiDocContent.setRequestParams(requestParams);
@@ -616,7 +639,11 @@ public class SourceBuilder {
 					JavaClass javaType = field.getType();
 					String fieldTypeName = javaType.getFullyQualifiedName();
 					String fieldGicName = javaType.getGenericCanonicalName();
-
+					
+					if (fieldTypeName.startsWith(DocClassUtil.FORMAT_TYPE_PACKAGE)) {
+						continue out;
+					}
+					
 					List<DocletTag> paramTags = field.getTags();
 					for (DocletTag docletTag : paramTags) {
 						if (DocClassUtil.isIgnoreTag(docletTag.getName())) {
@@ -637,7 +664,7 @@ public class SourceBuilder {
 					if (DocClassUtil.isCollection(fieldTypeName)) {
 						fieldTypeNameDesc.append(DocClassUtil.processTypeNameForParams(fieldTypeName));
 						String[] simpleGicName = DocClassUtil.getGicName(fieldGicName);
-						fieldTypeNameDesc.append(LEFT_PARENTHESES).append(DocClassUtil.processTypeNameForParams(simpleGicName[0])).append(RIGHT_PARENTHESES); 
+						fieldTypeNameDesc.append(LEFT_PARENTHESES).append(DocClassUtil.processTypeNameForParams(simpleGicName.length<=0?null:simpleGicName[0])).append(RIGHT_PARENTHESES); 
 					} else if (fieldTypeName.length() == 1) {
 						String gicName = globalGicNames[i];
 						String simpleName = DocClassUtil.getSimpleName(gicName);
@@ -946,5 +973,13 @@ public class SourceBuilder {
 			fieldList.addAll(cls1.getFields());
 		}
 		return fieldList;
+	}
+	
+	private String deprecatedFormat(Object source, boolean isDeprecated) {
+		if (isDeprecated) {
+			return "~~"+source+"~~";
+		} else {
+			return String.valueOf(source);
+		}
 	}
 }
