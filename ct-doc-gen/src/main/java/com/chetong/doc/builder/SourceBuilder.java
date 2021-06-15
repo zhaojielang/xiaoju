@@ -98,7 +98,7 @@ public class SourceBuilder {
 		this.threadPool = threadPool;
 		this.counterMap = counterMap;
 		this.basePathUrl = config.getBasePathUrl();
-		loadJavaFiles(config);
+		this.loadJavaFiles(config);
 		this.headers = config.getRequestHeaders();
 		this.routeReqUrl = this.basePathUrl + "/**/*.do";
 	}
@@ -117,14 +117,14 @@ public class SourceBuilder {
 		this.javaClasses.addAll(builder.getClasses());
 		counterMap.put(SCAN_CLASS_COUNT_KEY, javaClasses.size());
 	}
-
+	
 	public List<Future<Object>> getApiDocData() {
 		List<Future<Object>> futures = new ArrayList<>();
 		counterMap.put(CONTROLLER_COUNT_KEY, 0);
 		counterMap.put(SERVICE_COUNT_KEY, 0);
 		counterMap.put(ENUM_COUNT_KEY, 0);
 		
-		// 服务序号
+		// 接口序号
 		int docIndex = 4;
 		// 枚举序号
 		int enumIndex = 1;
@@ -136,9 +136,7 @@ public class SourceBuilder {
 			}
 			
 			if (checkService(cls)) {
-				final int index = docIndex;
-				docIndex = docIndex +1;
-				
+				final int index = docIndex++;
 				Future<Object> future = threadPool.submit(new Callable<Object>() {
 					@Override
 					public Object call() throws Exception {
@@ -168,8 +166,7 @@ public class SourceBuilder {
 				});
 				futures.add(future);
 			} else if (checkController(cls)) {
-				final int index = docIndex;
-				docIndex = docIndex +1;
+				final int index = docIndex++;
 				Future<Object> future = threadPool.submit(new Callable<Object>() {
 					@Override
 					public Object call() throws Exception {
@@ -199,14 +196,13 @@ public class SourceBuilder {
 					}
 				});
 				futures.add(future);
-			}else if (checkEnum(cls)) {
+			} else if (checkEnum(cls)) {
 				List<JavaField> fields = cls.getFields();
 				if (CollectionUtil.isNotEmpty(fields)) {
 					List<Expression> enumConstantArguments = fields.get(0).getEnumConstantArguments();
 					if (enumConstantArguments !=null && enumConstantArguments.size()>=2) {
 						List<JavaAnnotation> classAnnotations = cls.getAnnotations();
-						final int index = enumIndex;
-						enumIndex = enumIndex +1;
+						final int index = enumIndex++;
 						Future<Object> future = threadPool.submit(new Callable<Object>() {
 							@Override
 							public Object call() throws Exception {
@@ -258,7 +254,6 @@ public class SourceBuilder {
 						futures.add(future);
 					}
 				}
-			} else {
 			}
 		}
 		return futures;
@@ -276,7 +271,8 @@ public class SourceBuilder {
 			List<String> imports = cls.getSource().getImports();
 			for (String importEnum : imports) {
 				if(GlobalConstants.BASE_ENUM.containsKey(importEnum)) {
-					return true;
+					isEnum = true;
+					break;
 				}
 			}
 		}
@@ -319,7 +315,7 @@ public class SourceBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<ApiDocContent> buildServiceMethod(int parentIndex, final JavaClass cls, String serviceName,boolean globalIsDeprecated) {
+	private List<ApiDocContent> buildServiceMethod(int parentIndex, final JavaClass cls, String serviceName,boolean globalIsDeprecated) {
 		List<JavaClass> interfaces = cls.getInterfaces();
 		JavaClass interfaceCls = interfaces.isEmpty() ? null : interfaces.get(0);
 		List<JavaMethod> methods = cls.getMethods();
@@ -424,7 +420,7 @@ public class SourceBuilder {
 		return methodDocList;
 	}
 	
-	public List<ApiDocContent> buildControllerMethod(int parentIndex, final JavaClass cls, StringBuilder controllerReqPath,boolean globalIsDeprecated) {
+	private List<ApiDocContent> buildControllerMethod(int parentIndex, final JavaClass cls, StringBuilder controllerReqPath,boolean globalIsDeprecated) {
 		List<JavaMethod> methods = cls.getMethods();
 		List<ApiDocContent> methodDocList = new ArrayList<>(methods.size());
 		
@@ -612,7 +608,7 @@ public class SourceBuilder {
 		return docContent.toString();
 	}
 	
-	public void buildParams(String className, int tabCount, int selfCount, List<String> requiredFields, String parentFieldName, StringBuilder docContent) {
+	private void buildParams(String className, int tabCount, int selfCount, List<String> requiredFields, String parentFieldName, StringBuilder docContent) {
 		String globalTypeName = DocClassUtil.getSimpleName(className);
 		int i = 0;
 		String[] globalGicNames = DocClassUtil.getGicName(className);
@@ -647,7 +643,7 @@ public class SourceBuilder {
 				// 只认ParameterVO参数的Service
 				if (!(IgnoreFields.DECLARING_CLASS_NAME.equals(fieldClassName) && !IgnoreFields.PARAM_NAME.equals(fieldName))
 						&& !IgnoreFields.SERIAL_VERSION_UID.equals(fieldName)
-						&& !GlobalConstants.IGNORE_CLASS.containsKey(fieldClassFullName)) {
+						&& !DocClassUtil.isIgnorePackage(fieldClassFullName)) {
 
 					if (PARAM_NAME.equals(fieldName)) {
 						fieldName = PARAM_NAME_JSON_NAME;
@@ -882,7 +878,7 @@ public class SourceBuilder {
 				String fieldName = field.getName();
 				if (!(IgnoreFields.DECLARING_CLASS_NAME.equals(fieldClassName) && !PARAM_NAME.equals(fieldName))
 						&& !IgnoreFields.SERIAL_VERSION_UID.equals(fieldName)
-						&& !GlobalConstants.IGNORE_CLASS.containsKey(fieldClassFullName)) {
+						&& !DocClassUtil.isIgnorePackage(fieldClassFullName)) {
 
 					if (PARAM_NAME.equals(fieldName)) {
 						fieldName = PARAM_NAME_JSON_NAME;

@@ -9,7 +9,7 @@ public class ApiResultCode {
 	private String desc;
 	
 	/** 是否弃用 */
-	private String isDeprecated = "false";;
+	private String isDeprecated = "false";
 	
 	/** 枚举类名*/
 	private String enumType;

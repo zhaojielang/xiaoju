@@ -13,13 +13,13 @@ public class DocUtil {
 	
 	private static final String DOUBLE_QUOTATION  = "\"";
 	
-    private static String personName = new String[] {"汤姆","杰瑞","张三","李四","王五","赵六"}[(int)NumberUtil.getRandomByBetween(0,5)];
+    private static String personName = new String[] {"汤姆","杰瑞","张三","李四"}[(int)NumberUtil.getRandomByBetween(0,3)];
     private static String url = "http://www.chetong.net";
-    private static String email = "zhangsan@chetong.net";
-    private static String domainName = "www.chetong.net";
+    private static String email = "tom@chetong.net";
+    private static String domainName = "www.domain.com";
     private static String phone = "13000000000";
-    private static String company = "深圳市车童网科技有限公司";
-    private static String address = "深圳市福田保税区市花路19号港安大厦";
+    private static String company = "xxx科技有限公司";
+    private static String address = "深圳市福田保税区市花路19号";
     private static String ipv4Address = "127.0.0.1";
     private static String ipv6Address = "fe80::4db1:a249:199:6be%14";
     private static String dataTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());

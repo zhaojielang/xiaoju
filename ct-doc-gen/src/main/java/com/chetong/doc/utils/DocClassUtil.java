@@ -15,6 +15,7 @@ public class DocClassUtil {
 	public static final Map<String,String>  mapClassName = new HashMap<>();
 	public static final Map<String,String>  jsonClassName = new HashMap<>();
 	public static final Map<String,String>  isMvcIgnoreType = new HashMap<>();
+	public static final Map<String,String>  isIgnorePackage = new HashMap<>();
 	public static final String INT_TYPE_NAME = "int";
 	public static final String LONG_TYPE_NAME = "long";
 	public static final String FLOAT_TYPE_NAME = "float";
@@ -216,6 +217,15 @@ public class DocClassUtil {
 
     public static boolean isMvcIgnoreParams(String paramType){
     	return isMvcIgnoreType.containsKey(paramType);
+    }
+    
+    public static boolean isIgnorePackage(String classFullName) {
+    	for (String ignore : GlobalConstants.IGNORE_CLASS_PACKAGE) {
+			if (classFullName.startsWith(ignore)) {
+				return true;
+			}
+		}
+    	return false;
     }
     
 	public static String lowerFirstCapse(String str) {

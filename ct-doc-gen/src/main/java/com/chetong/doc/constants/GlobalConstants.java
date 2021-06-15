@@ -1,6 +1,8 @@
 package com.chetong.doc.constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class GlobalConstants {
@@ -15,7 +17,7 @@ public class GlobalConstants {
 	
 	public static final Map<String,String> LOG_TAIL_ANNOTATION = new HashMap<>();
 	
-	public static final Map<String,String> IGNORE_CLASS = new HashMap<>();
+	public static final List<String> IGNORE_CLASS_PACKAGE = new ArrayList<>();
 	
 	/** 忽略注解名称 */
 	public static final String IGNORE_TAG = "ignore";
@@ -69,13 +71,13 @@ public class GlobalConstants {
 	public static final String BASE_MODEL_FULLY_BB = "com.baobei.health.model.BaseModel";
 	
 	/** HTTP 请求体 */
-	public static final String HTTP_SERVLET_REQUEST = "javax.servlet.http.HttpServletRequest";
-	
-	/** HTTP 响应体 */
-	public static final String HTTP_SERVLET_RESPONSE = "javax.servlet.http.HttpServletResponse";
+	public static final String HTTP_SERVLET = "javax.servlet.http";
 	
 	/** FORMAT */
-	public static final String SIMPLE_DATE_FORMAT = "java.text.SimpleDateFormat";
+	public static final String JAVA_TEXT = "java.text";
+	
+	/** SPRINGFRAMEWORK */
+	public static final String SPRINGFRAMEWORK = "org.springframework.ui";
 	
 	static {
 		CONTROLLER_ANNOTATION.put(GlobalConstants.CONTROLLER_FULLY,GlobalConstants.CONTROLLER_FULLY);
@@ -104,10 +106,10 @@ public class GlobalConstants {
 	}
 	
 	static {
-		IGNORE_CLASS.put(GlobalConstants.BASE_MODEL_FULLY_CT,GlobalConstants.BASE_MODEL_FULLY_CT);
-		IGNORE_CLASS.put(GlobalConstants.BASE_MODEL_FULLY_BB,GlobalConstants.BASE_MODEL_FULLY_BB);
-		IGNORE_CLASS.put(GlobalConstants.HTTP_SERVLET_REQUEST,GlobalConstants.HTTP_SERVLET_REQUEST);
-		IGNORE_CLASS.put(GlobalConstants.HTTP_SERVLET_RESPONSE,GlobalConstants.HTTP_SERVLET_RESPONSE);
-		IGNORE_CLASS.put(GlobalConstants.SIMPLE_DATE_FORMAT,GlobalConstants.SIMPLE_DATE_FORMAT);
+		IGNORE_CLASS_PACKAGE.add(GlobalConstants.BASE_MODEL_FULLY_CT);
+		IGNORE_CLASS_PACKAGE.add(GlobalConstants.BASE_MODEL_FULLY_BB);
+		IGNORE_CLASS_PACKAGE.add(GlobalConstants.HTTP_SERVLET);
+		IGNORE_CLASS_PACKAGE.add(GlobalConstants.JAVA_TEXT);
+		IGNORE_CLASS_PACKAGE.add(GlobalConstants.SPRINGFRAMEWORK);
 	}
 }
