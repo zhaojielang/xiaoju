@@ -9,8 +9,6 @@ public class GlobalConstants {
 	
 	public static final Map<String,String> BASE_ENUM = new HashMap<>();
 	
-	public static final Map<String,String> SERVICE_ANNOTATION = new HashMap<>();
-	
 	public static final Map<String,String> REQUEST_MAPPING_ANNOTATION = new HashMap<>();
 	
 	public static final Map<String,String> REQUIRED_ANNOTATION = new HashMap<>();
@@ -87,10 +85,6 @@ public class GlobalConstants {
 	static {
 		BASE_ENUM.put(GlobalConstants.BASE_ENUM_FULLY_CT,GlobalConstants.BASE_ENUM_FULLY_CT);
 		BASE_ENUM.put(GlobalConstants.BASE_ENUM_FULLY_BB,GlobalConstants.BASE_ENUM_FULLY_BB);
-	}
-	
-	static {
-		SERVICE_ANNOTATION.put(GlobalConstants.SERVICE_FULLY,GlobalConstants.SERVICE_FULLY);
 	}
 	
 	static {

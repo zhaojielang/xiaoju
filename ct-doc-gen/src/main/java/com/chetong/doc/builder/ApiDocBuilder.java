@@ -39,6 +39,7 @@ public class ApiDocBuilder {
 			}
         }
         threadPool.shutdown();
+        System.out.println("已经弃用:"+sourceBuilder.DEPRECATED_LIST);
         
         //重新排序
         apiDocList.sort(Comparator.comparing(ApiDoc::getIndex));
