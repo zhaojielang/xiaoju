@@ -641,7 +641,7 @@ public class SourceBuilder {
 				String fieldClassFullName = declaringClass.getFullyQualifiedName();
 				String fieldName = field.getName();
 				// 只认ParameterVO参数的Service
-				if (!(IgnoreFields.DECLARING_CLASS_NAME.equals(fieldClassName) && !IgnoreFields.PARAM_NAME.equals(fieldName))
+				if (!(IgnoreFields.ROUTING_PARAM_NAME.equals(fieldClassName) && !IgnoreFields.DATA_PARAM_NAME.equals(fieldName))
 						&& !IgnoreFields.SERIAL_VERSION_UID.equals(fieldName)
 						&& !DocClassUtil.isIgnorePackage(fieldClassFullName)) {
 
@@ -876,7 +876,7 @@ public class SourceBuilder {
 				String fieldClassName = declaringClass.getName();
 				String fieldClassFullName = declaringClass.getFullyQualifiedName();
 				String fieldName = field.getName();
-				if (!(IgnoreFields.DECLARING_CLASS_NAME.equals(fieldClassName) && !PARAM_NAME.equals(fieldName))
+				if (!(IgnoreFields.ROUTING_PARAM_NAME.equals(fieldClassName) && !PARAM_NAME.equals(fieldName))
 						&& !IgnoreFields.SERIAL_VERSION_UID.equals(fieldName)
 						&& !DocClassUtil.isIgnorePackage(fieldClassFullName)) {
 
