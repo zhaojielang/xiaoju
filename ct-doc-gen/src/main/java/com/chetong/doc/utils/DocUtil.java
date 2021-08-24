@@ -13,9 +13,9 @@ public class DocUtil {
 	
 	private static final String DOUBLE_QUOTATION  = "\"";
 	
-    private static String personName = new String[] {"汤姆","杰瑞","张三","李四"}[(int)NumberUtil.getRandomByBetween(0,3)];
-    private static String url = "http://www.chetong.net";
-    private static String email = "tom@chetong.net";
+    private static String personName = new String[] {"汤姆","杰瑞","史帕克"}[(int)NumberUtil.getRandomByBetween(0,3)];
+    private static String url = "http://www.domain.com";
+    private static String email = "tom@mail.com";
     private static String domainName = "www.domain.com";
     private static String phone = "13000000000";
     private static String company = "xxx科技有限公司";
