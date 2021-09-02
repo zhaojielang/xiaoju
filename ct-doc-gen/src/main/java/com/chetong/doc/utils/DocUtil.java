@@ -19,7 +19,7 @@ public class DocUtil {
     private static String domainName = "www.domain.com";
     private static String phone = "13000000000";
     private static String company = "xxx科技有限公司";
-    private static String address = "深圳市福田保税区市花路19号";
+    private static String address = "北京平安街001号";
     private static String ipv4Address = "127.0.0.1";
     private static String ipv6Address = "fe80::4db1:a249:199:6be%14";
     private static String dataTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
