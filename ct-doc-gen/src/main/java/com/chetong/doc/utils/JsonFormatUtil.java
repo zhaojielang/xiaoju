@@ -11,6 +11,8 @@ public class JsonFormatUtil {
 	private static final char LEFT_CURLY_BRACKETS = '{';
 	private static final char RIGHT_CURLY_BRACKETS = '}';
 	
+	private JsonFormatUtil() {}
+	
 	/**
      * 格式化json字符串
      *
